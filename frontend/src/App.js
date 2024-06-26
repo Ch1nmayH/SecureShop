@@ -1,11 +1,13 @@
-import React from 'react'
+import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import MetaMask from "./Components/MetaMask";
 
 const App = () => {
-  return (
-    <>
-    Secure Shop
-    </>
-  )
-}
+	return (
+		<>
+			<MetaMask />
+		</>
+	);
+};
 
-export default App
+export default App;
