@@ -167,4 +167,13 @@ const resendOtp = async (req, res, next) => {
 	}
 };
 
-export default { signup, signin, signOut, verify, resendOtp };
+const getUsers = async (req, res) => {
+	try {
+		const users = await user.find({});
+		res.status(200).json({ users });
+	} catch (error) {
+		res.status(400).json({ message: error.message });
+	}
+};
+
+export default { signup, signin, signOut, verify, resendOtp, getUsers };
