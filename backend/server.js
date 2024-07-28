@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 import "dotenv/config";
-import router from "./routes/userRoute.js";
+import userRouter from "./routes/userRoute.js";
 import connectDB from "./config/db.js";
 import cookieParser from "cookie-parser";
 
@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 	res.send("server is running...");
 });
 
-app.use("/api", router);
+app.use("/api/user", userRouter);
 
 app.listen(port, () => {
 	try {
