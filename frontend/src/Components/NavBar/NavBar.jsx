@@ -17,15 +17,12 @@ const NavBar = () => {
       <input type="text" placeholder="Search for products, brands and more"/>
       <SearchIcon className='nav__search' fontSize='large'/>
       <ul>
-        <li onClick={()=>{setMenu("Home")}}>
-          <Link to='/'>Home</Link> 
-          {menu === "Home" ? <hr/> : <></>}
-        </li> 
-        <li onClick={()=>{setMenu("Contact Us")}}><Link to='/contact'> Contact Us </Link>{menu === "Contact Us" ? <hr/> : <></>}</li> 
+        <Link to='/'><li onClick={()=>{setMenu("Home")}}>Home{menu === "Home" ? <hr/> : <></>}</li> </Link>
+        <Link to='/contact'><li onClick={()=>{setMenu("Contact Us")}}>Contact Us {menu === "Contact Us" ? <hr/> : <></>}</li> </Link>
       </ul> 
       </div>
       <div className="nav-login-cart">
-        <button><Link to='/login'>Login</Link></button>
+        <Link to='/login'><button>Login</button></Link>
         <Link to='/cart'><ShoppingCartOutlinedIcon className='cart-icon' fontSize='large'/></Link>
         <div className="cart__count">
           {cartCount}
