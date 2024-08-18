@@ -1,6 +1,6 @@
 import otpGenerator from "otp-generator";
 
-const otp = ()=>{
+const generateOtp = ()=>{
 
 	return otpGenerator.generate(6, {
 		digits: true,
@@ -10,4 +10,4 @@ const otp = ()=>{
 	});
 } 
 
-export default otp;
+export default generateOtp;

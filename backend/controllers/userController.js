@@ -1,7 +1,7 @@
 import user from "../models/userModel.js";
 import Otp from "../models/otpModel.js";
 import bcrypt from "bcryptjs";
-import otp from "../config/otpGenerator.js";
+import generateOtp from "../config/otpGenerator.js";
 import transporter from "../config/mailTransporter.js";
 import jwt from "jsonwebtoken";
 
@@ -23,7 +23,7 @@ const signup = async (req, res, next) => {
 			mobile,
 			password,
 		});
-
+		let otp = generateOtp();
 		const mailOptions = {
 			from: process.env.EMAIL,
 			to: email,
@@ -87,8 +87,7 @@ const signin = async (req, res, next) => {
 };
 
 const signOut = async (req, res, next) => {
-	// let token = req.cookies.token;
-	// console.log(token);
+
 	try {
 		const token = req.cookies.token;
 		if (!token) {
@@ -137,6 +136,7 @@ const resendOtp = async (req, res, next) => {
 			return res.status(400).json({ message: "User already verified" });
 		}
 
+		let otp = generateOtp();
 		const mailOptions = {
 			from: process.env.EMAIL,
 			to: email,
