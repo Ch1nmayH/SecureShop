@@ -91,8 +91,9 @@ a{
     margin:2px;
     width: 80%;
     height: 3px;
+    border: none;
     border-radius: 10px;
-    background-color: rgba(9, 233, 28, 0.664);
+    background-color: rgba(41, 204, 204, 0.664);
     margin-top: 10px;
 }
 
@@ -143,7 +144,7 @@ a{
 
 .cart__count{
     position: absolute;
-    top: 20px;
+    top: 30px;
     right: 60px;
     background-color: #ff0000;
     color: #fff;
