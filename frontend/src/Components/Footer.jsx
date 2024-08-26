@@ -3,7 +3,10 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-white text-gray-800 border-gray-300 py-8 border">
+    <footer className="text-white border-gray-300 py-8 border"
+    style={{
+      background: "linear-gradient(to right, #0A1A22, #2B3F4F)", // Different gradient for NavBar
+    }}>
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row flex-wrap justify-between items-center">
           {/* Logo and Links */}
@@ -22,9 +25,9 @@ const Footer = () => {
           {/* Contact Info */}
           <div className="flex flex-col items-center md:items-end border-t md:border-none mt-2">
             <h2 className="text-lg font-semibold mb-2 mt-2">Contact Us</h2>
-            <p className="text-sm mb-1">Email: support@secureshop.com</p>
-            <p className="text-sm mb-1">Phone: +1 (234) 567-890</p>
-            <p className="text-sm">Address: 123 Secure St, eCommerce City, EC 12345</p>
+            <p className="text-sm mb-1">Email: s3cureh0p@gmail.com</p>
+            <p className="text-sm mb-1">Phone: +91 8660438044</p>
+            <p className="text-sm">Address: Karnatak University, Dharwad 580003</p>
           </div>
         </div>
         <div className="text-center mt-8 border-t border-gray-300 pt-4">

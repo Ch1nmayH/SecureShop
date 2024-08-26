@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ProductCard from "../Components/ProductCard";
+import LoadingSpinner from "../Components/LoadingSpinner";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -19,17 +20,18 @@ const Products = () => {
           setProducts(products);
         } else {
           console.error("API response products is not an array");
+          
         }
-        setLoading(false);
+        setTimeout(() => setLoading(false), 500);
       })
       .catch((error) => {
         console.error("There was an error fetching the products!", error);
-        setLoading(false);
+        setTimeout(() => setLoading(false), 500);
       });
   }, []);
 
   if (loading) {
-    return <p className="text-center text-lg mt-5">Loading products...</p>;
+    return <LoadingSpinner />;
   }
 
   if (!products.length) {
@@ -38,7 +40,7 @@ const Products = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Products</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center"></h1>
       <div className="flex flex-wrap justify-center">
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import wallpaper from "../Assets/formWall.png";
+
 
 const Register = () => {
   const [firstName, setFirstName] = useState('');
@@ -14,7 +16,10 @@ const Register = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-[calc(100vh-120px)] bg-gray-100">
+    <div className="flex flex-col justify-center items-center min-h-[calc(100vh-120px)] bg-cover bg-center"
+    style={{
+      backgroundImage: `url(${wallpaper})`, // Add your background image here
+    }}>
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold text-center mb-6">Register</h2>
         <form className="flex flex-col" onSubmit={handleSubmit}>
