@@ -5,6 +5,8 @@ import LoadingSpinner from "../Components/LoadingSpinner";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true);
   const [ethRate, setEthRate] = useState(0); // State to store ETH rate
 
@@ -26,6 +28,15 @@ const Products = () => {
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("https://fakestoreapi.in/api/categories");
+        setCategories(response.data);
+      } catch (error) {
+        console.error("There was an error fetching the categories!", error);
+      }
+    };
+
     const fetchEthRate = async () => {
       try {
         const response = await axios.get(
@@ -39,12 +50,21 @@ const Products = () => {
     };
 
     fetchProducts();
+    fetchCategories();
     fetchEthRate();
   }, []);
 
   const convertToEth = (priceInInr) => {
-    return (priceInInr / ethRate).toFixed(4); // Convert to ETH and format to 4 decimals
+    return (priceInInr / ethRate).toFixed(10); // Convert to ETH and format to 4 decimals
   };
+
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+  };
+
+  const filteredProducts = selectedCategory === "all"
+    ? products
+    : products.filter(product => product.category === selectedCategory);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -55,10 +75,24 @@ const Products = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 md:mt-[40px]">
       <h1 className="text-3xl font-bold mb-8 text-center">Featured Products</h1>
+      <div className="mb-6 flex justify-center">
+        <select
+          value={selectedCategory}
+          onChange={handleCategoryChange}
+          className="px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="all">All Categories</option>
+          {categories.map(category => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="flex flex-wrap justify-center">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <ProductCard
             key={product.id}
             product={{

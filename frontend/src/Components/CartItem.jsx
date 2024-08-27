@@ -36,7 +36,7 @@ const CartItem = ({ product, ethPrice, onQuantityChange }) => {
       <div className="flex-1 ml-4">
         <div className="font-bold text-lg text-gray-800">{shortTitle}</div>
         <div className="text-lg font-semibold text-green-500 mt-2">
-          {((product.price * quantity) / ethPrice).toFixed(4)} ETH
+          {((product.price * quantity) / ethPrice).toFixed(10)} ETH
         </div>
       </div>
       <div className="flex items-center">
