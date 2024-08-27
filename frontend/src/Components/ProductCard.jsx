@@ -19,7 +19,7 @@ const ProductCard = ({ product }) => {
     >
       <div className="relative">
         <motion.img
-          className="w-full h-40 object-cover transition-opacity duration-300 ease-in-out"
+          className="w-full h-48 object-contain transition-opacity duration-300 ease-in-out p-2"
           src={product.image}
           alt={product.title}
           whileHover={{ opacity: 0.9 }}
@@ -27,7 +27,7 @@ const ProductCard = ({ product }) => {
       </div>
       <div className="px-4 py-4 flex flex-col items-center">
         <motion.div
-          className="font-bold text-lg mb-1 text-gray-900 text-center"
+          className="font-bold text-md mb-2 text-gray-900 text-center border-b-2 pb-1 border-gray-200 w-full"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -35,7 +35,7 @@ const ProductCard = ({ product }) => {
           {product.title}
         </motion.div>
         <motion.p
-          className="text-gray-600 text-sm text-center mb-3"
+          className="text-gray-600 text-sm text-center mb-3 border-b-2 pb-1 border-gray-200 w-full"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -43,12 +43,12 @@ const ProductCard = ({ product }) => {
           {product.description.substring(0, 60)}...
         </motion.p>
         <motion.div
-          className="text-lg font-bold text-green-700 mb-4"
+          className="text-lg font-bold text-green-700 mb-4 border-b-2 pb-1 border-gray-200 w-full"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          ₹{product.price}
+          {(product.price / 85000).toFixed(4)} ETH
         </motion.div>
         <motion.button
           className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full flex items-center gap-2 transition-colors hover:from-purple-600 hover:to-pink-600"

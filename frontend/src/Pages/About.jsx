@@ -2,24 +2,14 @@ import React from 'react';
 
 const About = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <h1 className="text-4xl font-bold text-blue-700 mb-4">About SecureShop</h1>
-      <p className="text-lg text-gray-700 text-center max-w-2xl">
-        SecureShop is your trusted eCommerce platform that offers secure and convenient online shopping experiences. 
-        We prioritize your security by leveraging the latest technologies, including cryptocurrency payments, to ensure 
-        that your transactions are safe and reliable. At SecureShop, we are committed to providing the best customer service 
-        and a wide range of quality products to meet your needs.
-      </p>
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold text-blue-600">Our Mission</h2>
-        <p className="text-lg text-gray-600 mt-2">
-          To revolutionize online shopping by integrating advanced security measures and offering an exceptional shopping experience.
+<div className="container mx-auto p-4 md:mt-[100px]">
+      <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h1 className="text-4xl font-bold text-center mb-4">About SecureShop</h1>
+        <p className="text-gray-700 text-lg mb-4">
+          At SecureShop, we are committed to providing you with a secure and seamless online shopping experience. Our mission is to make online transactions as safe as possible by utilizing state-of-the-art encryption and blockchain technologies.
         </p>
-      </div>
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold text-blue-600">Our Vision</h2>
-        <p className="text-lg text-gray-600 mt-2">
-          To be the leading eCommerce platform where customers can shop with confidence, knowing their data and transactions are secure.
+        <p className="text-gray-700 text-lg">
+          We believe in empowering our users with knowledge about cryptocurrency, blockchain, and secure payments to ensure their online activities are protected. Thank you for trusting us with your online shopping needs.
         </p>
       </div>
     </div>
