@@ -1,15 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext  } from "react";
 import logo from "../Assets/logo.png";
 // import banner from "../Assets/banner.jpg";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import { CartContext } from "../Components/CartContext";
+
 
 const NavBar = () => {
-  const [cartCount, setCartCount] = useState(0);
+  const { cartCount } = useContext(CartContext);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const menuLinks = [

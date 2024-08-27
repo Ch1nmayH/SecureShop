@@ -47,7 +47,7 @@ const Cart = () => {
   }, []);
 
   const updateTotalPrice = (products) => {
-    const total = products.reduce((acc, product) => acc + product.price, 0);
+    const total = products.reduce((acc, product) => acc + product.price * (product.quantity || 1), 0);
     setTotalPrice(total);
   };
 
@@ -65,7 +65,7 @@ const Cart = () => {
   };
 
   const handleContinue = () => {
-    navigate('/checkout'); // Redirect to checkout page
+    navigate('/checkout');
   };
 
   const handleAddressChange = () => {
@@ -79,7 +79,6 @@ const Cart = () => {
       setIsEditingAddress(false);
     } catch (error) {
       console.error("Failed to update address:", error);
-      // Handle error (e.g., show a message to the user)
     }
   };
 
@@ -147,7 +146,7 @@ const Cart = () => {
           </div>
 
           {/* Cart Items */}
-          <div className="bg-white p-4 rounded-md shadow-md mb-4 max-w-screen">
+          <div className="bg-white p-4 rounded-md shadow-md mb-4 max-w-screen flex flex-col items-center">
             {cartProducts.map((product) => (
               <CartItem
                 key={product.id}
@@ -160,16 +159,16 @@ const Cart = () => {
         </div>
 
         {/* Price Details */}
-        <div className="bg-white p-4 rounded-md shadow-md max-w-screen lg:w-[350px] h-[200px]">
+        <div className="bg-white p-4 rounded-md shadow-md max-w-screen lg:w-[360px] h-[200px]">
           <h2 className="text-xl font-bold mb-4">PRICE DETAILS</h2>
           <div className="flex justify-between mb-2">
             <span>Price ({cartProducts.length} items)</span>
-            <span>{(totalPrice / ethPrice).toFixed(4)} ETH</span> {/* Price in ETH */}
+            <span>{(totalPrice / ethPrice).toFixed(10)} ETH</span> {/* Price in ETH */}
           </div>
           <hr className="my-2" />
           <div className="flex justify-between font-bold text-xl">
             <span>Total Amount</span>
-            <span>{(totalPrice / ethPrice).toFixed(4)} ETH</span> {/* Total price in ETH */}
+            <span>{(totalPrice / ethPrice).toFixed(10)} ETH</span> {/* Total price in ETH */}
           </div>
           <button
             className="bg-[#233745] text-white w-full mt-4 py-3 rounded-lg font-bold hover:bg-[#3d617a]"

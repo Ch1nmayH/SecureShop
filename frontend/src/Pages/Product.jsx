@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from "react";
+// ProductPage.js
+import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { CartContext } from "../Components/CartContext";
 
 const ProductPage = () => {
   const { productId } = useParams();
+  const { incrementCartCount } = useContext(CartContext);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [ethPrice, setEthPrice] = useState(0);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -21,9 +26,31 @@ const ProductPage = () => {
       }
     };
 
+    const fetchEthPrice = async () => {
+      try {
+        const response = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=inr");
+        setEthPrice(response.data.ethereum.inr);
+      } catch (error) {
+        console.error("Error fetching ETH price:", error);
+      }
+    };
+
     fetchProduct();
+    fetchEthPrice();
   }, [productId]);
 
+  const convertToEth = (priceInInr) => (priceInInr / ethPrice).toFixed(10);
+
+  const handleAddToCart = async () => {
+    alert("Button clicked!");
+    try {
+      await axios.post("/api/cart", { productId });
+      console.log("Added to cart");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
+  
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!product) return <div>Product not found</div>;
@@ -37,7 +64,7 @@ const ProductPage = () => {
         transition={{ duration: 0.5 }}
       >
         {/* Product Image */}
-        <div className="w-full lg:w-1/2 max-w-md">
+        <div className="w-full lg:w-5/12 max-w-md">
           <motion.img
             src={product.image}
             alt={product.title}
@@ -49,15 +76,20 @@ const ProductPage = () => {
         </div>
 
         {/* Product Details */}
-        <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start gap-4">
+        <div className="w-full lg:w-7/12 flex flex-col items-center lg:items-start gap-4">
           <h1 className="text-3xl font-bold text-gray-800 text-center lg:text-left">{product.title}</h1>
           <p className="text-gray-600 text-lg text-center lg:text-left">{product.description}</p>
           <div className="text-2xl font-semibold text-green-500">
-            ₹{product.price ? product.price.toLocaleString("en-IN") : "N/A"}
+            {convertToEth(product.price)} ETH
           </div>
-          <button className="mt-6 w-full lg:w-1/2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-full transition-colors hover:from-cyan-600 hover:to-blue-600">
+          <motion.button
+            className="mt-6 w-full lg:w-auto bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-full flex items-center justify-center gap-2 transition-transform transform hover:scale-105"
+            whileHover={{ scale: 1.05 }}
+            onClick={handleAddToCart}
+          >
+            <ShoppingCartIcon fontSize="small" />
             Add to Cart
-          </button>
+          </motion.button>
         </div>
       </motion.div>
     </div>
