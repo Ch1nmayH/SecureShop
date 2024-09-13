@@ -10,7 +10,12 @@ import cookieParser from "cookie-parser";
 const app = express();
 const port = process.env.PORT || 6000;
 
-app.use(cors());
+app.use(cors({
+	origin: "http://localhost:3000", // Replace * with the specific origin
+	credentials: true, // Allow sending of credentials (cookies)
+  }));
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
