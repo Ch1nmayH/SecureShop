@@ -1,30 +1,47 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { useState, useContext  } from "react";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
 import logo from "../Assets/logo.png";
 // import banner from "../Assets/banner.jpg";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import { CartContext } from "../Components/CartContext";
-
+import UserContext from "../utils/CreateContext";
+import Cookies from "js-cookie";
 
 const NavBar = () => {
-  const { cartCount } = useContext(CartContext);
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const [cartCount, setCartCount] = useState(0);
+  const { token, setToken } = useContext(UserContext);
   const menuLinks = [
     { name: "Home", path: "/" },
     { name: "Products", path: "/products" },
     { name: "About", path: "/about" },
   ];
+  const navigate = useNavigate();
 
+  const logOut = () => {
+    if(token) {
+      setToken(null);
+      Cookies.remove("token");
+      navigate("/login");
+    }
+     
+  }
+
+  useEffect(() => {
+    const count = JSON.parse(localStorage.getItem("cart"))?.length || 0;
+    setCartCount(count);
+  }
+  , [token]);
   return (
-    <div className="h-[80px] shadow-2xl bg-gradient-to-r from-cyan-500 to-blue-500 sticky top-0 z-10 transition-all"
-    style={{
-      background: "linear-gradient(to right, #0A1A22, #2B3F4F)", // Different gradient for NavBar
-    }}>
+    <div
+      className="h-[80px] shadow-2xl bg-gradient-to-r from-cyan-500 to-blue-500 sticky top-0 z-10 transition-all"
+      style={{
+        background: "linear-gradient(to right, #0A1A22, #2B3F4F)", // Different gradient for NavBar
+      }}
+    >
       <div className="w-full my-auto">
         <div className="flex items-center justify-between p-4">
           {/* Mobile Menu Toggle */}
@@ -78,13 +95,27 @@ const NavBar = () => {
                 {cartCount}
               </span>
             </div>
-            <Link to={"/login"}>
-              <button className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200">
-                <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                  Login
-                </span>
-              </button>
-            </Link>
+            {token ? (
+              <>
+                <Link to={"/login"} onClick={logOut}>
+                  <button className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200">
+                    <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                      Logout
+                    </span>
+                  </button>
+                </Link>
+              </>
+            ) : (
+              <>
+                 <Link to={"/login"}>
+                  <button className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200">
+                    <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                      Login
+                    </span>
+                  </button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
 

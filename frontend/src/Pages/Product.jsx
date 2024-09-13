@@ -1,14 +1,12 @@
 // ProductPage.js
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { CartContext } from "../Components/CartContext";
 
 const ProductPage = () => {
   const { productId } = useParams();
-  const { incrementCartCount } = useContext(CartContext);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

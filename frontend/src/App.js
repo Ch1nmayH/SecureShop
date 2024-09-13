@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import NavBar from "./Components/NavBar";
 import HomePage from "./Pages/HomePage";
@@ -11,12 +11,15 @@ import ErrorPage from "./Pages/ErrorPage";
 import Footer from "./Components/Footer";
 import About from "./Pages/About";
 import Checkout from "./Pages/Checkout";
-
+import AdminPanel from "./Pages/AdminPanel";
+import OTPVerification from "./Pages/OTPVerification";
+import UserContext from "./utils/CreateContext";
+import Cookies from "js-cookie";
+import { Logout } from "@mui/icons-material";
 // Layout component to include NavBar and Outlet for nested routes
+
 const Layout = () => (
-  <div
-    className="flex flex-col min-h-screen bg-gray-100"
-  >
+  <div className="flex flex-col min-h-screen bg-gray-100">
     <NavBar />
     <main className="flex-grow">
       <Outlet /> {/* This renders the matched child route */}
@@ -59,16 +62,37 @@ const router = createBrowserRouter([
         path: "/login",
         element: <Login />,
       },
+
       {
         path: "/register",
         element: <Register />,
       },
+      {
+        path: "/otp-verification",
+        element: <OTPVerification />,
+      },
     ],
+  },
+  {
+    path: "/admin",
+    element: <AdminPanel />,
   },
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  const [token, setToken] = useState(Cookies.get("token"));
+  useEffect(() => {
+    if (token) setToken(token);
+    else setToken(null);
+  }, []);
+
+  return (
+    <>
+      <UserContext.Provider value={{ token, setToken }}>
+        <RouterProvider router={router} />;
+      </UserContext.Provider>
+    </>
+  );
 };
 
 export default App;

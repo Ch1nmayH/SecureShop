@@ -1,86 +1,213 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import wallpaper from "../Assets/formWall.png";
 
-
 const Register = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [cpassword, setCPassword] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [password, setPassword] = useState("");
+  const [cpassword, setCPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  // Individual error states
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [mobileError, setMobileError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [cpasswordError, setCPasswordError] = useState("");
+  const [serverError, setServerError] = useState("");
+
+  const navigate = useNavigate();
+
+  // Validation functions
+  const validateFirstName = () => {
+    if (!firstName) return "First name is required";
+    return "";
+  };
+
+  const validateLastName = () => {
+    if (!lastName) return "Last name is required";
+    return "";
+  };
+
+  const validateEmail = () => {
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!email) return "Email is required";
+    if (!emailRegex.test(email)) return "Invalid email format";
+    return "";
+  };
+
+  const validateMobile = () => {
+    const mobileRegex = /^[0-9]{10}$/;
+    if (!mobile) return "Mobile number is required";
+    if (!mobileRegex.test(mobile))
+      return "Mobile number must be a 10-digit number";
+    return "";
+  };
+
+  const validatePassword = () => {
+    if (!password) return "Password is required";
+    if (password.length < 6)
+      return "Password must be at least 6 characters long";
+    return "";
+  };
+
+  const validateCPassword = () => {
+    if (cpassword !== password) return "Passwords do not match";
+    return "";
+  };
+
+  // Handle submit with field validation
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your submit logic here
+
+    // Update error states individually
+    const firstNameValidation = validateFirstName();
+    const lastNameValidation = validateLastName();
+    const emailValidation = validateEmail();
+    const mobileValidation = validateMobile();
+    const passwordValidation = validatePassword();
+    const cpasswordValidation = validateCPassword();
+
+    setFirstNameError(firstNameValidation);
+    setLastNameError(lastNameValidation);
+    setEmailError(emailValidation);
+    setMobileError(mobileValidation);
+    setPasswordError(passwordValidation);
+    setCPasswordError(cpasswordValidation);
+
+    // Check if there are any errors
+    if (
+      firstNameValidation ||
+      lastNameValidation ||
+      emailValidation ||
+      mobileValidation ||
+      passwordValidation ||
+      cpasswordValidation
+    ) {
+      return; // Exit if there are validation errors
+    }
+
+    try {
+      // Backend request using Axios
+      const response = await axios.post(
+        "http://localhost:5000/api/user/signup",
+        {
+          firstName,
+          lastName,
+          email,
+          mobile,
+          password,
+        }
+      );
+
+      if (response.status === 201) {
+        navigate("/otp-verification"); // Redirect to OTP verification page
+      } else if (response.status === 200 && response.data.message === "User already exists with this email") {
+        setEmailError("Email already exists");
+      } else if(response.status === 200 && response.data.message === "User already exists with this mobile number") {
+        setMobileError("Mobile number already exists");
+      }
+    } catch (error) { 
+      setServerError("Error registering user. Please try again.");
+    }
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-[calc(100vh-120px)] bg-cover bg-center"
-    style={{
-      backgroundImage: `url(${wallpaper})`, // Add your background image here
-    }}>
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+    <div
+      className="flex flex-col justify-center items-center min-h-[calc(100vh-120px)] bg-cover bg-center"
+      style={{
+        backgroundImage: `url(${wallpaper})`,
+      }}
+    >
+      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg mt-7 md:mt-20 mb-10">
         <h2 className="text-2xl font-semibold text-center mb-6">Register</h2>
+        {serverError && <p className="text-red-500 text-center mb-4">{serverError}</p>}
         <form className="flex flex-col" onSubmit={handleSubmit}>
+          {/* First Name */}
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2" htmlFor="fname">First Name</label>
             <input
               type="text"
               id="fname"
               name="fname"
-              required
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border rounded-md"
               onChange={(e) => setFirstName(e.target.value)}
             />
+            {firstNameError && <p className="text-red-500 text-sm">{firstNameError}</p>}
           </div>
+
+          {/* Last Name */}
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2" htmlFor="lname">Last Name</label>
             <input
               type="text"
               id="lname"
               name="lname"
-              required
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border rounded-md"
               onChange={(e) => setLastName(e.target.value)}
             />
+            {lastNameError && <p className="text-red-500 text-sm">{lastNameError}</p>}
           </div>
+
+          {/* Email */}
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2" htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
               name="email"
-              required
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border rounded-md"
               onChange={(e) => setEmail(e.target.value)}
             />
+            {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
           </div>
+
+          {/* Mobile */}
+          <div className="mb-4">
+            <label className="block text-sm font-semibold mb-2" htmlFor="mobile">Mobile</label>
+            <input
+              type="tel"
+              id="mobile"
+              name="mobile"
+              className="w-full px-3 py-2 border rounded-md"
+              onChange={(e) => setMobile(e.target.value)}
+            />
+            {mobileError && <p className="text-red-500 text-sm">{mobileError}</p>}
+          </div>
+
+          {/* Password */}
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2" htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
               name="password"
-              required
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border rounded-md"
               onChange={(e) => setPassword(e.target.value)}
             />
+            {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
           </div>
+
+          {/* Confirm Password */}
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2" htmlFor="cpassword">Confirm Password</label>
             <input
               type="password"
               id="cpassword"
               name="cpassword"
-              required
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border rounded-md"
               onChange={(e) => setCPassword(e.target.value)}
             />
+            {cpasswordError && <p className="text-red-500 text-sm">{cpasswordError}</p>}
           </div>
+
           <button
             type="submit"
-            className="w-full py-2 bg-gray-800 text-white font-semibold rounded-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full py-2 bg-gray-800 text-white font-semibold rounded-md"
           >
             Register
           </button>
