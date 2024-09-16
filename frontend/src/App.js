@@ -15,8 +15,8 @@ import AdminPanel from "./Pages/AdminPanel";
 import OTPVerification from "./Pages/OTPVerification";
 import UserContext from "./utils/CreateContext";
 import Cookies from "js-cookie";
-import { Logout } from "@mui/icons-material";
-// Layout component to include NavBar and Outlet for nested routes
+import RetailerPanel from "./Pages/RetailerPanel";
+import UnauthorizedPage from "./Pages/UnauthorizedPage";
 
 const Layout = () => (
   <div className="flex flex-col min-h-screen bg-gray-100">
@@ -76,6 +76,14 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: <AdminPanel />,
+  },
+  {
+    path: "/retailer",
+    element: <RetailerPanel />,
+  },
+  {
+    path: "/notAuthorized",
+    element: <UnauthorizedPage />,
   },
 ]);
 
