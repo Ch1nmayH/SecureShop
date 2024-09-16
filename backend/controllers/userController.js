@@ -200,7 +200,7 @@ const resendOtp = async (req, res, next) => {
   }
 };
 
-const getUsers = async (req, res) => {
+const getAllUsers = async (req, res) => {
   try {
     const users = await user.find({});
     res.status(200).json({ users });
@@ -209,4 +209,176 @@ const getUsers = async (req, res) => {
   }
 };
 
-export default { signup, signin, signOut, verify, resendOtp, getUsers };
+const getUsers = async (req, res) => {
+  try {
+    const users = await user.find({ isAdmin: false, isRetailer: false });
+    res.status(200).json({ users });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+const getRetailers = async (req, res) => {
+  try {
+    const retailers = await user.find({ isRetailer: true });
+    res.status(200).json({ retailers });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+const bulkInsert = async (req, res,next) => {
+  try {
+    const users = req.body;
+
+    // Validate the structure of the users data if needed
+    if (!Array.isArray(users) || users.length === 0) {
+      return res.status(400).json({ message: 'Invalid user data format' });
+    }
+
+    // Insert users into the database
+    await user.insertMany(users);
+    res.status(200).json({ message: 'Users inserted successfully' });
+    next();
+  } catch (error) {
+    console.error('Error inserting users:', error);
+    res.status(500).json({ message: 'Server error', error });
+    next();
+  }
+}
+
+const checkAdminAuth = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: "You are not Authenticated" });
+    }
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if (!verified) {
+      return res.status(401).json({ message: "Token Verification Failed" });
+    }
+  
+    const email = verified.email;
+    let User = await user.findOne({ email });
+    console.log(User);
+
+    if (!User.isAdmin) {
+      return res
+        .status(401)
+        .json({ message: "You need to be admin to view this page" });
+    }
+
+    return res.status(200).json({ message: "success" });
+    next();
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+    next();
+  }
+}
+
+const checkRetailerAuth = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: "You are not Authenticated" });
+    }
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if (!verified) {
+      return res.status(401).json({ message: "Token Verification Failed" });
+    }
+    const email = verified.email;
+    let User = await user.findOne({ email });
+
+    if (!User.isRetailer || !user.isAdmin) {
+      return res
+        .status(401)
+        .json({ message: "You need to be a retailer or an admin to view this page" });
+    }
+    return res.status(200).json({ message: "success" });
+
+    next();
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+    next();
+  }
+}
+
+const checkAuth = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: "You are not Authenticated" });
+    }
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if (!verified) {
+      return res.status(401).json({ message: "Token Verification Failed" });
+    }
+    return res.status(200).json({ message: "success" });
+
+    next();
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+    next();
+  }
+}
+
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await user.findByIdAndDelete(id);
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { firstName, lastName, email, mobile, password } = req.body
+    await user.findByIdAndUpdate(id, { firstName, lastName, email, mobile, password });
+    res.status(200).json({ message: "User updated successfully" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+const createUser = async (req, res) => {
+  try {
+    const { firstName, lastName, email, mobile, password,isVerified,isAdmin,isRetailer} = req.body;
+    const newUser = await user.create({
+      firstName,
+      lastName,
+      email,
+      mobile,
+      password,
+      isVerified,
+      isAdmin,
+      isRetailer,
+    });
+    res.status(201).json({ message: "User created successfully" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+const changePassword = async (req, res) => {
+  try {
+    const token = req.cookies.token; 
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if(!verified.id) {
+      return res.status(401).json({ message: "You are not authenticated" });
+    }
+    const  password  = req.body.newPassword;
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    await user.findByIdAndUpdate(verified.id, { password: hashedPassword });
+    res.status(200).json({ message: "Password changed successfully" });
+  }
+  catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}   
+export default { signup, signin, signOut, verify, resendOtp, getAllUsers , getUsers , getRetailers, bulkInsert, checkAdminAuth, checkRetailerAuth, checkAuth, deleteUser, updateUser, createUser , changePassword};
+
+
