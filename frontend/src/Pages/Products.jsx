@@ -6,7 +6,7 @@ import LoadingSpinner from "../Components/LoadingSpinner";
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,7 +28,8 @@ const Products = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/product/getcategories");
-        setCategories(response.data.map((category) => category.name));
+        // Assuming each category has both id and name
+        setCategories(response.data); // Store full category objects (with id and name)
       } catch (error) {
         console.error("There was an error fetching the categories!", error);
       }
@@ -39,12 +40,20 @@ const Products = () => {
   }, []);
 
   const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
+    const selectedCategoryName = e.target.value;
+    if (selectedCategoryName === "all") {
+      setSelectedCategoryId("all");
+    } else {
+      const selectedCategory = categories.find(category => category.name === selectedCategoryName);
+      if (selectedCategory) {
+        setSelectedCategoryId(selectedCategory._id); // Use the category's ID to filter products
+      }
+    }
   };
 
-  const filteredProducts = selectedCategory === "all"
+  const filteredProducts = selectedCategoryId === "all"
     ? products
-    : products.filter(product => product.category === selectedCategory);
+    : products.filter(product => product.category === selectedCategoryId);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -59,14 +68,14 @@ const Products = () => {
       <h1 className="text-3xl font-bold mb-8 text-center">Featured Products</h1>
       <div className="mb-6 flex justify-center">
         <select
-          value={selectedCategory}
+          value={selectedCategoryId}
           onChange={handleCategoryChange}
           className="px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="all">All Categories</option>
           {categories.map(category => (
-            <option key={category} value={category}>
-              {category}
+            <option key={category._id} value={category.name}>
+              {category.name}
             </option>
           ))}
         </select>

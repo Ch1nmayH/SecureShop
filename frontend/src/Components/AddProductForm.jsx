@@ -47,6 +47,15 @@ const AddProductForm = ({ categories, newProductData, setNewProductData, handleA
           ))}
         </select>
         <input
+          type="number"
+          name="stock"
+          value={newProductData.stock}
+          onChange={handleAddInputChange}
+          placeholder="Stock"
+          className="block mb-2 p-2 border rounded"
+          required
+        />
+        <input
           type="file"
           onChange={handleImageChange}
           className="block mb-2"

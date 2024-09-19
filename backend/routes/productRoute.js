@@ -54,10 +54,10 @@ app.get("/getproduct/:id", productController.getProductById);
 //Add Products
 app.post("/addproduct", retailerAuth, upload.single("image"), productController.addProduct);
 
+
 //Update Product
-// app.put('/updateproduct/:id', productController.updateProduct);
+app.put("/updateproduct/:productId", retailerAuth, upload.single("image"), productController.updateProduct);
 
 //Delete Product
-// app.delete('/deleteproduct/:id', productController.deleteProduct);
-
+app.delete('/deleteProduct/:id', productController.deleteProduct);
 export default app;

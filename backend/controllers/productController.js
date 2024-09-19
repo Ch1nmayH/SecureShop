@@ -2,6 +2,7 @@ import product from "../models/ProductModel.js"
 import category from "../models/CategoryModel.js"
 import fs from "fs";
 import path from "path";
+import multer from "multer";
 
 
 const getProducts = async (req, res) => {
@@ -90,7 +91,7 @@ const addCategory = async (req, res) => {
   
 const addProduct  = async (req, res) => {
     try {
-      const { name, description, price, category } = req.body;
+      const { name, description, price, category,stock } = req.body;
   
       // First, create the product without the image
       const newProduct = {
@@ -98,6 +99,7 @@ const addProduct  = async (req, res) => {
         description,
         price,
         category,
+        stock,
         image: "", // This will be updated once we rename the uploaded image
       };
   
@@ -134,4 +136,77 @@ const addProduct  = async (req, res) => {
     }
   };
 
-export default { getProducts, getCategories , getProductsByCategory, addCategory, updateCategory, deleteCategory, getProductById, addProduct };
+  const updateProduct = async (req, res) => {
+    try {
+      const { productId } = req.params; // Get product ID from the URL
+      const { name, description, price, category, stock } = req.body;
+  
+      // Find the product by its ID
+      const productToUpdate = await product.findById(productId);
+      if (!productToUpdate) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+  
+      // Update product details only if provided
+      productToUpdate.name = name || productToUpdate.name;
+      productToUpdate.description = description || productToUpdate.description;
+      productToUpdate.price = price || productToUpdate.price;
+      productToUpdate.category = category || productToUpdate.category;
+  
+      // Update stock only if it's defined and is a number
+      if (stock !== undefined && !isNaN(stock)) {
+        productToUpdate.stock = stock;
+      }
+  
+      // Check if a new image is uploaded
+      if (req.file) {
+        const oldPath = req.file.path; // Path to the uploaded image with temp name
+        const newFilename = `${productToUpdate._id}${path.extname(req.file.originalname)}`; // New image filename as product ID
+        const newPath = path.join(req.file.destination, newFilename); // Full path for the renamed file
+  
+        // Rename the new image file
+        fs.rename(oldPath, newPath, async (err) => {
+          if (err) {
+            console.error("Error renaming file:", err);
+            return res.status(500).json({ message: "Failed to rename image" });
+          }
+  
+          // Remove the old image if it exists
+          if (productToUpdate.image) {
+            fs.unlink(path.join("uploads/products", productToUpdate.image), (err) => {
+              if (err) console.error("Error deleting old image:", err);
+            });
+          }
+  
+          // Update product with the new image URL
+          productToUpdate.image = `uploads/products/${newFilename}`;
+          await productToUpdate.save();
+  
+          // Respond with the updated product
+          return res.status(200).json(productToUpdate);
+        });
+      } else {
+        // Save updated product without image change
+        await productToUpdate.save();
+        return res.status(200).json(productToUpdate);
+      }
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(500).json({ message: "Failed to update product" });
+    }
+  };
+  
+  
+
+  const deleteProduct = async (req, res) => {
+    try {
+      console.log(req.params.id);
+      await product.findByIdAndDelete(req.params.id);
+
+      res.json({ message: "Product deleted successfully." });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+export default { getProducts, getCategories , getProductsByCategory, addCategory, updateCategory, deleteCategory, getProductById, addProduct, updateProduct, deleteProduct };

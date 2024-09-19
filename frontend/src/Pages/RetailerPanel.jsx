@@ -114,6 +114,7 @@ const RetailerPanel = () => {
       formDataToSubmit.append("description", newProductData.description);
       formDataToSubmit.append("price", newProductData.price);
       formDataToSubmit.append("category", newProductData.category);
+      formDataToSubmit.append("stock", newProductData.stock);
       if (newImage) {
         formDataToSubmit.append("image", newImage);
       }
@@ -144,6 +145,7 @@ const RetailerPanel = () => {
             };
 
       // Send request with either FormData or JSON
+      console.log("formDataToSubmit", formDataToSubmit);
       await axios.post(apiUrl, formDataToSubmit, requestOptions);
 
       // Display success message
@@ -167,36 +169,50 @@ const RetailerPanel = () => {
       const formDataToSubmit = new FormData();
       formDataToSubmit.append("name", updatedData.name);
       formDataToSubmit.append("description", updatedData.description);
+  
       if (activeTab === "products") {
+        // Only append product-specific data
         formDataToSubmit.append("price", updatedData.price);
         formDataToSubmit.append("category", updatedData.category);
+        formDataToSubmit.append("stock", updatedData.stock);
+  
+        // If a new image was selected, append it to the FormData
         if (updatedData.selectedImage) {
           formDataToSubmit.append("image", updatedData.selectedImage);
         }
       }
-
+  
       const apiUrl =
         activeTab === "products"
-          ? `http://localhost:5000/api/product/editProduct/${editData._id}`
+          ? `http://localhost:5000/api/product/updateproduct/${editData._id}`
           : `http://localhost:5000/api/product/updatecategory/${editData._id}`;
-
-          const requestOptions =
-          activeTab === "products"
-            ? {
-                headers: { "Content-Type": "multipart/form-data" },
-                withCredentials: true,
-              }
-            : {
-                headers: { "Content-Type": "application/json" },
-                withCredentials: true,
-              };
-
-      await axios.put(apiUrl, formDataToSubmit, requestOptions ,{
-        withCredentials: true,
-      });
+  
+      // For product updates, ensure that the headers are set for multipart/form-data
+      const requestOptions =
+        activeTab === "products"
+          ? {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+              withCredentials: true,
+            }
+          : {
+              headers: {
+                "Content-Type": "application/json",
+              },
+              withCredentials: true,
+            };
+  
+      // Sending the PUT request with the correct content type
+      console.log(apiUrl)
+      await axios.put(apiUrl, formDataToSubmit, requestOptions);
+  
+      // Success message and UI updates
       setPopupMessage(`${activeTab.slice(0, -1)} updated successfully`);
       setShowPopup(true);
       setIsEditing(false);
+  
+      // Refetch products or categories after the update
       if (activeTab === "products") {
         fetchProducts();
       } else {
@@ -206,7 +222,8 @@ const RetailerPanel = () => {
       console.error("Error updating the product/category:", error);
     }
   };
-
+  
+  
   const handleDelete = async (id) => {
     try {
       const apiUrl =

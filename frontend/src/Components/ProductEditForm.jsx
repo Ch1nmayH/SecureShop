@@ -69,6 +69,15 @@ const ProductEditForm = ({ product, categories, onSubmit, onCancel }) => {
           ))}
         </select>
         <input
+          type="number"
+          name="price"
+          value={formData.price}
+          onChange={handleInputChange}
+          placeholder="Price"
+          className="block mb-2 p-2 border rounded"
+          required
+        />
+        <input
           type="file"
           onChange={handleImageChange}
           className="block mb-2"

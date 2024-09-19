@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 
-const RetailerEditForm = ({ data, categories, activeTab, onSubmit, onCancel }) => {
+const RetailerEditForm = ({
+  data,
+  categories,
+  activeTab,
+  onSubmit,
+  onCancel,
+}) => {
   const [formData, setFormData] = useState({
     name: data?.name || "",
     description: data?.description || "",
     price: data?.price || "",
-    category: data?.category || (categories.length > 0 ? categories[0]._id : ""),
+    category:
+      data?.category || (categories.length > 0 ? categories[0]._id : ""),
+    stock: data?.stock || "",
     selectedImage: null,
   });
 
@@ -33,7 +41,10 @@ const RetailerEditForm = ({ data, categories, activeTab, onSubmit, onCancel }) =
       <h2 className="text-xl font-bold mb-4">
         Edit {activeTab === "products" ? "Product" : "Category"}
       </h2>
+
       <form onSubmit={handleSubmit}>
+        {/* Common fields for both Product and Category */}
+
         <input
           type="text"
           name="name"
@@ -52,6 +63,8 @@ const RetailerEditForm = ({ data, categories, activeTab, onSubmit, onCancel }) =
           className="block mb-2 p-2 border rounded"
           required
         />
+
+        {/* Conditional form fields for Product */}
         {activeTab === "products" && (
           <>
             <input
@@ -77,12 +90,22 @@ const RetailerEditForm = ({ data, categories, activeTab, onSubmit, onCancel }) =
               ))}
             </select>
             <input
+              type="number"
+              name="stock"
+              value={formData.stock}
+              onChange={handleInputChange}
+              placeholder="Stock"
+              className="block mb-2 p-2 border rounded"
+              required
+            />
+            <input
               type="file"
               onChange={handleImageChange}
               className="block mb-2"
             />
           </>
         )}
+
         <div className="flex justify-end gap-2">
           <button
             type="button"
