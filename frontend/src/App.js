@@ -17,6 +17,7 @@ import UserContext from "./utils/CreateContext";
 import Cookies from "js-cookie";
 import RetailerPanel from "./Pages/RetailerPanel";
 import UnauthorizedPage from "./Pages/UnauthorizedPage";
+import { CartProvider } from "./utils/CartContext";
 
 const Layout = () => (
   <div className="flex flex-col min-h-screen bg-gray-100">
@@ -97,7 +98,9 @@ const App = () => {
   return (
     <>
       <UserContext.Provider value={{ token, setToken }}>
-        <RouterProvider router={router} />;
+        <CartProvider>
+          <RouterProvider router={router} />;
+        </CartProvider>
       </UserContext.Provider>
     </>
   );

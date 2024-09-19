@@ -5,6 +5,7 @@ import cors from "cors";
 import "dotenv/config";
 import userRouter from "./routes/userRoute.js";
 import productRouter from "./routes/productRoute.js";
+import CartRouter from "./routes/cartRoute.js";
 import connectDB from "./config/db.js";
 import cookieParser from "cookie-parser";
 import multer from 'multer';
@@ -36,6 +37,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
+app.use("/api/cart", CartRouter);
 
 app.listen(port, () => {
 	try {

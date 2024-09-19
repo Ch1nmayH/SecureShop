@@ -9,10 +9,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import UserContext from "../utils/CreateContext";
 import Cookies from "js-cookie";
+import axios from "axios";
+import CartContext from "../utils/CartContext";
 
 const NavBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const { cartCount, setCartCount } = useContext(CartContext);
   const { token, setToken } = useContext(UserContext);
   const menuLinks = [
     { name: "Home", path: "/" },
@@ -29,12 +31,6 @@ const NavBar = () => {
     }
      
   }
-
-  useEffect(() => {
-    const count = JSON.parse(localStorage.getItem("cart"))?.length || 0;
-    setCartCount(count);
-  }
-  , [token]);
   return (
     <div
       className="h-[80px] shadow-2xl bg-gradient-to-r from-cyan-500 to-blue-500 sticky top-0 z-10 transition-all"

@@ -54,7 +54,6 @@ app.get("/getproduct/:id", productController.getProductById);
 //Add Products
 app.post("/addproduct", retailerAuth, upload.single("image"), productController.addProduct);
 
-
 //Update Product
 app.put("/updateproduct/:productId", retailerAuth, upload.single("image"), productController.updateProduct);
 

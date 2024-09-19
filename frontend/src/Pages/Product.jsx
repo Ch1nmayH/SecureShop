@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import CartContext from "../utils/CartContext"; // Import CartContext
 
 const Product = () => {
   const { productId } = useParams();
+  const { cartItems, addToCart, removeFromCart } = useContext(CartContext); // Use CartContext to get cart functions
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [ethPrice, setEthPrice] = useState(0);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/product/getproduct/${productId}`);
-        console.log(response.data);
-
         setProduct(response.data);
       } catch (error) {
         setError(error);
@@ -26,21 +25,21 @@ const Product = () => {
     };
 
     fetchProduct();
-    
   }, [productId]);
+
+  // Check if the product is already in the cart
+  const isInCart = cartItems.some((item) => item.product._id === productId);
+
+  const handleCartToggle = () => {
+    if (isInCart) {
+      removeFromCart(productId); // If in the cart, remove it
+    } else {
+      addToCart(productId, 1); // If not in the cart, add it
+    }
+  };
 
   const convertToEth = (priceInInr) => (priceInInr).toFixed(10);
 
-  const handleAddToCart = async () => {
-    alert("Button clicked!");
-    try {
-      await axios.post("/api/cart", { productId });
-      console.log("Added to cart");
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-    }
-  };
-  
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!product) return <div>Product not found</div>;
@@ -53,7 +52,7 @@ const Product = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Product Image with Fixed Size */}
+        {/* Product Image */}
         <div className="w-full lg:w-5/12 max-w-md">
           <motion.img
             src={`http://localhost:5000/${product.image}`}
@@ -62,28 +61,28 @@ const Product = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            style={{ maxWidth: "400px", height: "300px" }} // Fixed size
+            style={{ maxWidth: "400px", height: "300px" }}
           />
         </div>
 
         {/* Product Details */}
         <div className="w-full lg:w-7/12 flex flex-col items-center lg:items-start gap-4">
-          {/* Product Name */}
           <h1 className="text-3xl font-bold text-gray-800 text-center lg:text-left">{product.title}</h1>
-          {/* Product Description */}
           <p className="text-gray-600 text-lg text-center lg:text-left">{product.description}</p>
-          {/* Price in ETH */}
           <div className="text-2xl font-semibold text-green-500">
             {convertToEth(product.price)} ETH
           </div>
-          {/* Add to Cart Button */}
+
+          {/* Add/Remove from Cart Button */}
           <motion.button
-            className="mt-6 w-full lg:w-auto bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-full flex items-center justify-center gap-2 transition-transform transform hover:scale-105"
+            className={`mt-6 w-full lg:w-auto ${
+              isInCart ? "bg-red-500" : "bg-gradient-to-r from-cyan-500 to-blue-500"
+            } text-white px-6 py-3 rounded-full flex items-center justify-center gap-2 transition-transform transform hover:scale-105`}
             whileHover={{ scale: 1.05 }}
-            onClick={handleAddToCart}
+            onClick={handleCartToggle}
           >
             <ShoppingCartIcon fontSize="small" />
-            Add to Cart
+            {isInCart ? "Remove from Cart" : "Add to Cart"}
           </motion.button>
         </div>
       </motion.div>
