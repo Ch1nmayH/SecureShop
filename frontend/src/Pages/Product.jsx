@@ -1,11 +1,10 @@
-// ProductPage.js
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
-const ProductPage = () => {
+const Product = () => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +14,9 @@ const ProductPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`https://fakestoreapi.com/products/${productId}`);
+        const response = await axios.get(`http://localhost:5000/api/product/getproduct/${productId}`);
+        console.log(response.data);
+
         setProduct(response.data);
       } catch (error) {
         setError(error);
@@ -24,20 +25,11 @@ const ProductPage = () => {
       }
     };
 
-    const fetchEthPrice = async () => {
-      try {
-        const response = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=inr");
-        setEthPrice(response.data.ethereum.inr);
-      } catch (error) {
-        console.error("Error fetching ETH price:", error);
-      }
-    };
-
     fetchProduct();
-    fetchEthPrice();
+    
   }, [productId]);
 
-  const convertToEth = (priceInInr) => (priceInInr / ethPrice).toFixed(10);
+  const convertToEth = (priceInInr) => (priceInInr).toFixed(10);
 
   const handleAddToCart = async () => {
     alert("Button clicked!");
@@ -61,25 +53,30 @@ const ProductPage = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Product Image */}
+        {/* Product Image with Fixed Size */}
         <div className="w-full lg:w-5/12 max-w-md">
           <motion.img
-            src={product.image}
+            src={`http://localhost:5000/${product.image}`}
             alt={product.title}
-            className="w-full h-full object-cover rounded-lg shadow-lg"
+            className="w-full h-72 object-contain rounded-lg shadow-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
+            style={{ maxWidth: "400px", height: "300px" }} // Fixed size
           />
         </div>
 
         {/* Product Details */}
         <div className="w-full lg:w-7/12 flex flex-col items-center lg:items-start gap-4">
+          {/* Product Name */}
           <h1 className="text-3xl font-bold text-gray-800 text-center lg:text-left">{product.title}</h1>
+          {/* Product Description */}
           <p className="text-gray-600 text-lg text-center lg:text-left">{product.description}</p>
+          {/* Price in ETH */}
           <div className="text-2xl font-semibold text-green-500">
             {convertToEth(product.price)} ETH
           </div>
+          {/* Add to Cart Button */}
           <motion.button
             className="mt-6 w-full lg:w-auto bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-full flex items-center justify-center gap-2 transition-transform transform hover:scale-105"
             whileHover={{ scale: 1.05 }}
@@ -94,4 +91,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default Product;

@@ -8,16 +8,13 @@ const Products = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true);
-  const [ethRate, setEthRate] = useState(0); // State to store ETH rate
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("https://fakestoreapi.in/api/products");
-        const { products } = response.data;
-
-        if (Array.isArray(products)) {
-          setProducts(products);
+        const response = await axios.get("http://localhost:5000/api/product/getproducts");
+        if (Array.isArray(response.data)) {
+          setProducts(response.data);
         } else {
           console.error("API response products is not an array");
         }
@@ -30,33 +27,16 @@ const Products = () => {
 
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("https://fakestoreapi.in/api/categories");
-        setCategories(response.data);
+        const response = await axios.get("http://localhost:5000/api/product/getcategories");
+        setCategories(response.data.map((category) => category.name));
       } catch (error) {
         console.error("There was an error fetching the categories!", error);
       }
     };
 
-    const fetchEthRate = async () => {
-      try {
-        const response = await axios.get(
-          "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=inr"
-        );
-        const ethInInr = response.data.ethereum.inr;
-        setEthRate(ethInInr); // Store ETH rate
-      } catch (error) {
-        console.error("There was an error fetching the ETH rate!", error);
-      }
-    };
-
     fetchProducts();
     fetchCategories();
-    fetchEthRate();
   }, []);
-
-  const convertToEth = (priceInInr) => {
-    return (priceInInr / ethRate).toFixed(10); // Convert to ETH and format to 4 decimals
-  };
 
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
@@ -94,11 +74,8 @@ const Products = () => {
       <div className="flex flex-wrap justify-center">
         {filteredProducts.map((product) => (
           <ProductCard
-            key={product.id}
-            product={{
-              ...product,
-              ethPrice: convertToEth(product.price), // Add converted ETH price
-            }}
+            key={product._id}
+            product={product} // Pass product directly without conversion
           />
         ))}
       </div>

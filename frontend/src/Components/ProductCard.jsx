@@ -7,7 +7,7 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${product._id}`);
   };
 
   return (
@@ -20,8 +20,8 @@ const ProductCard = ({ product }) => {
       <div className="relative">
         <motion.img
           className="w-full h-48 object-contain transition-opacity duration-300 ease-in-out p-2"
-          src={product.image}
-          alt={product.title}
+          src={"http://localhost:5000/" + product.image || 'default-image.jpg'}
+          alt={product.name}
           whileHover={{ opacity: 0.9 }}
         />
       </div>
@@ -32,7 +32,7 @@ const ProductCard = ({ product }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          {product.title.substring(0, 61)}
+          {product.name.substring(0, 61)}
         </motion.div>
         <motion.p
           className="text-gray-600 text-sm text-center mb-3 border-b-2 pb-1 border-gray-200 w-full"
@@ -48,7 +48,7 @@ const ProductCard = ({ product }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          {product.ethPrice} ETH
+          {product.price} ETH
         </motion.div>
         <motion.button
           className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full flex items-center gap-2 transition-colors hover:from-purple-600 hover:to-pink-600 justify-center"
