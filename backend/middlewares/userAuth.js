@@ -43,7 +43,7 @@ const retailerAuth = async (req, res, next) => {
 		const email = verified.email;
 		let user = await User.findOne({ email });
 
-		if (!user.isRetailer || !user.isAdmin) {
+		if (!user.isRetailer && !user.isAdmin) {
 			return res
 				.status(401)
 				.json({ message: "You need to be a retailer or an admin to view this page" });

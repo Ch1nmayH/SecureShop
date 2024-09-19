@@ -4,11 +4,21 @@ import mongoose from "mongoose";
 import cors from "cors";
 import "dotenv/config";
 import userRouter from "./routes/userRoute.js";
+import productRouter from "./routes/productRoute.js";
 import connectDB from "./config/db.js";
 import cookieParser from "cookie-parser";
+import multer from 'multer';
+import path from 'path';
+
+
 
 const app = express();
 const port = process.env.PORT || 6000;
+
+
+// Set up path for the uploads folder
+const __dirname = path.resolve();
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(cors({
 	origin: "http://localhost:3000", // Replace * with the specific origin
@@ -25,6 +35,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/user", userRouter);
+app.use("/api/product", productRouter);
 
 app.listen(port, () => {
 	try {
