@@ -22,7 +22,7 @@ app.get("/getProductQuantity", CartController.getProductQuantity);
 app.post("/updateQuantity", CartController.updateQuantity);
 
 //clear cart
-// app.post("/clearCart", CartController.clearCart);
+app.post("/clearCart", CartController.clearCart);
 
 
 

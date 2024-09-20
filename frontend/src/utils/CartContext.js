@@ -60,6 +60,17 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const clearCart = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/cart/clearCart', {}, { withCredentials: true });
+      setCartItems([]); // Clear cart items from context
+      setCartCount(0); // Reset cart count
+    } catch (error) {
+      console.error('Failed to clear cart:', error);
+    }
+  }
+
+
   // Update product quantity in the cart
   const updateCartItemQuantity = async (productId, quantity) => {
     try {
@@ -97,7 +108,8 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         updateCartItemQuantity,
         fetchProductQuantity,
-        fetchCartItems
+        fetchCartItems,
+        clearCart
       }}
     >
       {children}

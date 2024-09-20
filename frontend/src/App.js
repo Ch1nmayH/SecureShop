@@ -10,7 +10,6 @@ import Register from "./Pages/Register";
 import ErrorPage from "./Pages/ErrorPage";
 import Footer from "./Components/Footer";
 import About from "./Pages/About";
-import Checkout from "./Pages/Checkout";
 import AdminPanel from "./Pages/AdminPanel";
 import OTPVerification from "./Pages/OTPVerification";
 import UserContext from "./utils/CreateContext";
@@ -18,6 +17,7 @@ import Cookies from "js-cookie";
 import RetailerPanel from "./Pages/RetailerPanel";
 import UnauthorizedPage from "./Pages/UnauthorizedPage";
 import { CartProvider } from "./utils/CartContext";
+import CheckoutPage from "./Pages/CheckoutPage ";
 
 const Layout = () => (
   <div className="flex flex-col min-h-screen bg-gray-100">
@@ -53,7 +53,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/checkout",
-        element: <Checkout />,
+        element: <CheckoutPage />,
       },
       {
         path: "/product/:productId",

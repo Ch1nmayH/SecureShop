@@ -164,6 +164,29 @@ const addToCart = async (req, res) => {
     }
   }
 
+const clearCart = async (req, res) => {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
   
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = user.id;
+  
+    try {
+      const cart = await Cart.findOne({ user: userId });
+  
+      if (!cart) {
+        return res.status(404).json({ message: "Cart not found" });
+      }
+  
+      cart.items = [];
+      await cart.save();
+  
+      return res.status(200).json({ message: "Cart cleared" });
+    } catch (error) {
+      return res.status(500).json({ message: "Error clearing cart", error });
+    }
+  }
 
-export default { getCartItems, addToCart, removeFromCart, getProductQuantity,updateQuantity };
+export default { getCartItems, addToCart, removeFromCart, getProductQuantity,updateQuantity, clearCart };

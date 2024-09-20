@@ -2,15 +2,19 @@ import React, { useContext, useEffect, useState } from "react";
 import CartItem from "../Components/CartItem";
 import { useNavigate } from "react-router-dom";
 import CartContext from "../utils/CartContext";
+import { Button } from "@mui/material";
+import ClearAllIcon from "@mui/icons-material/ClearAll";
 
 const Cart = () => {
-  const { cartItems, updateCartItemQuantity, removeFromCart } = useContext(CartContext);
+  const { cartItems, updateCartItemQuantity, removeFromCart, clearCart } = useContext(CartContext);
   const [totalPrice, setTotalPrice] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (cartItems && cartItems.length) {
+    if (cartItems.length > 0) {
       updateTotalPrice(cartItems);
+    } else {
+      setTotalPrice(0); // Reset total price when cart is empty
     }
   }, [cartItems]);
 
@@ -24,10 +28,8 @@ const Cart = () => {
 
   const handleQuantityChange = (productId, newQuantity) => {
     if (newQuantity === 0) {
-      // Remove item if the quantity is 0
       handleCartEmpty(productId);
     } else {
-      // Update quantity
       updateCartItemQuantity(productId, newQuantity);
     }
   };
@@ -36,6 +38,13 @@ const Cart = () => {
     removeFromCart(productId);
   };
 
+  const handleClearCart = async () => {
+    try {
+      clearCart(); // Assuming clearCart removes all items from context
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+    }
+  };
 
   const handleContinue = () => {
     navigate("/checkout");
@@ -46,15 +55,32 @@ const Cart = () => {
       <div className="w-full max-w-5xl flex flex-col lg:flex-row justify-between lg:space-x-8">
         <div className="lg:w-2/3">
           <div className="bg-white p-4 rounded-md shadow-md mb-4">
-            {cartItems.map((cartItem) => (
-              <CartItem
-                key={cartItem.product._id}
-                product={cartItem.product}
-                oldQuantity={cartItem.quantity}
-                onQuantityChange={handleQuantityChange} // Pass the quantity handler
-                removeFromCart = {handleCartEmpty}
-              />
-            ))}
+          <h2 className="text-xl font-bold text-center">Your Cart</h2>
+            <div className="mb-2 text-right">
+            {cartItems.length > 0 && (
+            <Button
+              startIcon={<ClearAllIcon />}
+              variant="outlined"
+              color="error"
+              onClick={handleClearCart}
+            >
+              Clear All
+            </Button>
+          )}
+          </div>
+            {cartItems.length > 0 ? (
+              cartItems.map((cartItem) => (
+                <CartItem
+                  key={cartItem.product._id}
+                  product={cartItem.product}
+                  oldQuantity={cartItem.quantity}
+                  onQuantityChange={handleQuantityChange}
+                  removeFromCart={handleCartEmpty}
+                />
+              ))
+            ) : (
+              <div className="text-center text-lg font-bold">Your cart is empty</div>
+            )}
           </div>
         </div>
 
@@ -72,6 +98,7 @@ const Cart = () => {
           <button
             className="bg-[#233745] text-white w-full mt-4 py-3 rounded-lg font-bold hover:bg-[#3d617a]"
             onClick={handleContinue}
+            disabled={cartItems.length === 0} // Disable if cart is empty
           >
             Check Out
           </button>
@@ -79,10 +106,6 @@ const Cart = () => {
       </div>
     </div>
   );
-
- 
 };
-
-
 
 export default Cart;
