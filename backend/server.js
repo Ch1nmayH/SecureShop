@@ -11,8 +11,6 @@ import cookieParser from "cookie-parser";
 import multer from 'multer';
 import path from 'path';
 
-
-
 const app = express();
 const port = process.env.PORT || 6000;
 
@@ -47,3 +45,4 @@ app.listen(port, () => {
 		console.error(`Error: ${error.message}`);
 	}
 });
+

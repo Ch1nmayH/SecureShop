@@ -14,7 +14,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('https://fakestoreapi.com/products?limit=3');
+        const response = await axios.get("http://localhost:5000/api/product/getproducts");
         if (Array.isArray(response.data)) {
           setProducts(response.data);
         } else {
@@ -26,18 +26,7 @@ const HomePage = () => {
         setLoading(false);
       }
     };
-
-    const fetchEthPrice = async () => {
-      try {
-        const response = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=inr');
-        setEthPrice(response.data.ethereum.inr);
-      } catch (err) {
-        setError('Failed to fetch ETH price');
-      }
-    };
-
     fetchProducts();
-    fetchEthPrice();
   }, []);
 
   if (loading) {
@@ -49,26 +38,34 @@ const HomePage = () => {
   }
 
   return (
-	<div className="bg-gray-100 min-h-screen">
-	{/* Banner Section */}
-	<div className="relative h-[400px] bg-no-repeat bg-cover bg-center" style={{ backgroundImage: `url(${BannerImage})` }}>
-	  <div className="absolute inset-0 bg-black opacity-50"></div>
-	  <motion.div
-		className="relative flex justify-center items-center h-full text-white text-center"
-		initial={{ opacity: 0, y: -50 }}
-		animate={{ opacity: 1, y: 0 }}
-		transition={{ duration: 1 }}
-	  >
-		<h1 className="text-4xl md:text-6xl font-bold">Welcome to SecureShop</h1>
-	  </motion.div>
-	</div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {products.map(product => (
-          <FeaturedProduct key={product.id} product={product} ethPrice={ethPrice} />
-        ))}
-      </div>
-      <SecurePayments />
+    <div className="bg-gray-100 min-h-screen">
+    {/* Banner Section */}
+    <div className="relative h-[400px] bg-no-repeat bg-cover bg-center" style={{ backgroundImage: `url(${BannerImage})` }}>
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <motion.div
+        className="relative flex justify-center items-center h-full text-white text-center"
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+      >
+        <h1 className="text-4xl md:text-6xl font-bold">Welcome to SecureShop</h1>
+      </motion.div>
     </div>
+  
+    {/* Title Section */}
+    <div className="text-center mt-8">
+      <h2 className="text-3xl font-bold text-gray-800">Featured Products</h2>
+    </div>
+  
+    {/* Products Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 mt-4">
+      {products.slice(0, 3).map((product) => (
+        <FeaturedProduct key={product.id} product={product} />
+      ))}
+    </div>
+  
+    <SecurePayments />
+  </div>
   );
 };
 
