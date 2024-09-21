@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import generateOtp from "../config/otpGenerator.js";
 import transporter from "../config/mailTransporter.js";
 import jwt from "jsonwebtoken";
+import Address from "../models/AddressModel.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -379,6 +380,87 @@ const changePassword = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 }   
-export default { signup, signin, signOut, verify, resendOtp, getAllUsers , getUsers , getRetailers, bulkInsert, checkAdminAuth, checkRetailerAuth, checkAuth, deleteUser, updateUser, createUser , changePassword};
+
+
+const getUserAddress = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if (!verified) {
+      return res.status(401).json({ message: "You are not authenticated" });
+    }
+    const id = verified._id;
+    const address = await Address.findOne({ userId: id });
+    console.log(address);
+    let addressToString = `${address.name}, ${address.address1}, ${address.address2}, ${address.city}, ${address.state}, ${address.pincode}`;
+    res.status(200).json({ address : addressToString });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+const addAddress = async (req, res) => {
+  try {
+    // Extract the token from cookies and verify it
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: "Authentication token missing" });
+    }
+
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if (!verified) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    const userId = verified.id; // Extract the user ID from the verified token
+
+    // Destructure the address fields from request body
+    const { name, address1, address2, city, pinCode, state, mobile } = req.body;
+
+    // Validate input fields
+    if (!name || !address1 || !city || !pinCode || !state || !mobile) {
+      return res.status(400).json({ message: "All required fields must be filled" });
+    }
+
+    // Check if the user already has an address
+    let userAddress = await Address.findOne({ user: userId });
+
+    if (userAddress) {
+      // If address exists, update it with the new details
+      userAddress.name = name;
+      userAddress.address1 = address1;
+      userAddress.address2 = address2;
+      userAddress.city = city;
+      userAddress.pincode = pinCode; // Use lowercase `pincode` as per the schema
+      userAddress.state = state;
+      userAddress.mobile = mobile;
+
+      await userAddress.save(); // Save the updated address
+      return res.status(200).json({ message: "Address updated successfully", address: userAddress });
+    } else {
+      // If no address exists, create a new one
+      const newAddress = new Address({
+        user: userId, // Ensure the userId is assigned to the `user` field
+        name,
+        address1,
+        address2,
+        city,
+        pincode: pinCode, // Ensure correct field is used
+        state,
+        mobile,
+      });
+
+      await newAddress.save(); // Save the new address to the database
+
+      return res.status(201).json({ message: "Address added successfully", address: newAddress });
+    }
+  } catch (error) {
+    // Handle errors and send a response with an error message
+    res.status(500).json({ message: `Error adding/updating address: ${error.message}` });
+  }
+};
+
+
+export default { signup, signin, signOut, verify, resendOtp, getAllUsers , getUsers , getRetailers, bulkInsert, checkAdminAuth, checkRetailerAuth, checkAuth, deleteUser, updateUser, createUser , changePassword, getUserAddress, addAddress };
 
 

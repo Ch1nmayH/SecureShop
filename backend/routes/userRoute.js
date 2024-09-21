@@ -38,4 +38,15 @@ router.post("/createUser", adminAuth,  userController.createUser);
 
 //Change password
 router.put("/changePassword", auth,  userController.changePassword);
+
+
+
+//get user Address
+router.get("/getUserAddress", auth,  userController.getUserAddress);
+
+//add user Address
+router.post("/addAddress", auth,  userController.addAddress);
+//update user Address
+// router.put("/updateAddress", auth,  userController.updateAddress);
+
 export default router;
