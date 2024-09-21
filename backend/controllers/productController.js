@@ -34,7 +34,6 @@ const getProductsByCategory = async (req, res) => {
 
 const addCategory = async (req, res) => {
     try {
-      console.log(req.body); // Log the incoming data to check
       const { name, description } = req.body;
       if (!name || !description) {
         return res.status(400).json({ message: "Name and description are required." });
@@ -49,7 +48,6 @@ const addCategory = async (req, res) => {
 
   const updateCategory = async (req, res) => {
     try {
-        console.log(req.body)
       const { name, description } = req.body;
       if (!name || !description) {
         return res.status(400).json({ message: "Name and description are required." });
@@ -200,7 +198,6 @@ const addProduct  = async (req, res) => {
 
   const deleteProduct = async (req, res) => {
     try {
-      console.log(req.params.id);
       await product.findByIdAndDelete(req.params.id);
 
       res.json({ message: "Product deleted successfully." });

@@ -18,6 +18,9 @@ import RetailerPanel from "./Pages/RetailerPanel";
 import UnauthorizedPage from "./Pages/UnauthorizedPage";
 import { CartProvider } from "./utils/CartContext";
 import CheckoutPage from "./Pages/CheckoutPage ";
+import SuccessPage from "./Pages/SuccessPage";
+import OrdersPage from "./Pages/OrdersPage";
+import FailedPage from "./Pages/FailedPage";
 
 const Layout = () => (
   <div className="flex flex-col min-h-screen bg-gray-100">
@@ -72,6 +75,20 @@ const router = createBrowserRouter([
         path: "/otp-verification",
         element: <OTPVerification />,
       },
+
+      {
+        path:"/success/:orderId",
+        element:<SuccessPage/>
+      },
+
+      {
+        path:"/failed/:orderId",
+        element:<FailedPage/>
+      },
+      {
+     path:"/OrderPage/:orderStatus",
+      element:<OrdersPage/>
+      }
     ],
   },
   {
