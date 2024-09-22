@@ -83,10 +83,7 @@ const signin = async (req, res, next) => {
     if (existingUser.isVerified) {
       const token = jwt.sign(
         { email: existingUser.email, id: existingUser._id },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: "1h",
-        } // 1 hour
+        process.env.JWT_SECRET
       );
 
       return res
@@ -94,7 +91,6 @@ const signin = async (req, res, next) => {
         .cookie("token", token, {
           httpOnly: true,
           secure: false,
-          maxAge: 1000 * 60 * 60 * 60 * 24,
         })
         .json({ user: existingUser, token });
     }
@@ -212,12 +208,22 @@ const getAllUsers = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
+    if (req.query.isRetailer == "true") {
+      const users = await user.find({ isRetailer: true });
+      return res.status(200).json({ users });
+    }
+
+    if (req.query.isAdmin == "false" && req.query.isRetailer == "false") {
+      const users = await user.find({ isAdmin: false, isRetailer: false });
+      return res.status(200).json({ users });
+    }
+
     const users = await user.find({ isAdmin: false, isRetailer: false });
     res.status(200).json({ users });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}
+};
 
 const getRetailers = async (req, res) => {
   try {
@@ -226,27 +232,27 @@ const getRetailers = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}
+};
 
-const bulkInsert = async (req, res,next) => {
+const bulkInsert = async (req, res, next) => {
   try {
     const users = req.body;
 
     // Validate the structure of the users data if needed
     if (!Array.isArray(users) || users.length === 0) {
-      return res.status(400).json({ message: 'Invalid user data format' });
+      return res.status(400).json({ message: "Invalid user data format" });
     }
 
     // Insert users into the database
     await user.insertMany(users);
-    res.status(200).json({ message: 'Users inserted successfully' });
+    res.status(200).json({ message: "Users inserted successfully" });
     next();
   } catch (error) {
-    console.error('Error inserting users:', error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error("Error inserting users:", error);
+    res.status(500).json({ message: "Server error", error });
     next();
   }
-}
+};
 
 const checkAdminAuth = async (req, res, next) => {
   try {
@@ -258,7 +264,7 @@ const checkAdminAuth = async (req, res, next) => {
     if (!verified) {
       return res.status(401).json({ message: "Token Verification Failed" });
     }
-  
+
     const email = verified.email;
     let User = await user.findOne({ email });
     // console.log(User);
@@ -275,7 +281,7 @@ const checkAdminAuth = async (req, res, next) => {
     res.status(500).json({ message: error.message });
     next();
   }
-}
+};
 
 const checkRetailerAuth = async (req, res, next) => {
   try {
@@ -293,7 +299,9 @@ const checkRetailerAuth = async (req, res, next) => {
     if (!User.isRetailer || !user.isAdmin) {
       return res
         .status(401)
-        .json({ message: "You need to be a retailer or an admin to view this page" });
+        .json({
+          message: "You need to be a retailer or an admin to view this page",
+        });
     }
     return res.status(200).json({ message: "success" });
 
@@ -302,7 +310,7 @@ const checkRetailerAuth = async (req, res, next) => {
     res.status(500).json({ message: error.message });
     next();
   }
-}
+};
 
 const checkAuth = async (req, res, next) => {
   try {
@@ -321,7 +329,7 @@ const checkAuth = async (req, res, next) => {
     res.status(500).json({ message: error.message });
     next();
   }
-}
+};
 
 const deleteUser = async (req, res) => {
   try {
@@ -331,22 +339,37 @@ const deleteUser = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}
+};
 
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, mobile, password } = req.body
-    await user.findByIdAndUpdate(id, { firstName, lastName, email, mobile, password });
+    const { firstName, lastName, email, mobile, password } = req.body;
+    await user.findByIdAndUpdate(id, {
+      firstName,
+      lastName,
+      email,
+      mobile,
+      password,
+    });
     res.status(200).json({ message: "User updated successfully" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}
+};
 
 const createUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, mobile, password,isVerified,isAdmin,isRetailer} = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      mobile,
+      password,
+      isVerified,
+      isAdmin,
+      isRetailer,
+    } = req.body;
     const newUser = await user.create({
       firstName,
       lastName,
@@ -361,26 +384,24 @@ const createUser = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}
+};
 
 const changePassword = async (req, res) => {
   try {
-    const token = req.cookies.token; 
+    const token = req.cookies.token;
     const verified = jwt.verify(token, process.env.JWT_SECRET);
-    if(!verified.id) {
+    if (!verified.id) {
       return res.status(401).json({ message: "You are not authenticated" });
     }
-    const  password  = req.body.password;
+    const password = req.body.password;
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     await user.findByIdAndUpdate(verified.id, { password: hashedPassword });
     res.status(200).json({ message: "Password changed successfully" });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}   
-
+};
 
 const getUserAddress = async (req, res) => {
   try {
@@ -393,11 +414,11 @@ const getUserAddress = async (req, res) => {
     const address = await Address.findOne({ userId: id });
     // console.log(address);
     let addressToString = `${address.name}, ${address.address1}, ${address.address2}, ${address.city}, ${address.state}, ${address.pinCode}`;
-    res.status(200).json({ address : addressToString, fullAddress: address });
+    res.status(200).json({ address: addressToString, fullAddress: address });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}
+};
 
 const addAddress = async (req, res) => {
   try {
@@ -415,12 +436,14 @@ const addAddress = async (req, res) => {
     const userId = verified.id; // Extract the user ID from the verified token
 
     // Destructure the address fields from request body
-    const { name, address1, address2, city, pinCode, state, mobile } = req.body.address;
-   
+    const { name, address1, address2, city, pinCode, state, mobile } =
+      req.body.address;
 
     // Validate input fields
     if (!name || !address1 || !city || !pinCode || !state || !mobile) {
-      return res.status(400).json({ message: "All required fields must be filled" });
+      return res
+        .status(400)
+        .json({ message: "All required fields must be filled" });
     }
 
     // Check if the user already has an address
@@ -432,12 +455,17 @@ const addAddress = async (req, res) => {
       userAddress.address1 = address1;
       userAddress.address2 = address2;
       userAddress.city = city;
-      userAddress.pinCode = pinCode; 
+      userAddress.pinCode = pinCode;
       userAddress.state = state;
       userAddress.mobile = mobile;
 
       await userAddress.save(); // Save the updated address
-      return res.status(200).json({ message: "Address updated successfully", address: userAddress });
+      return res
+        .status(200)
+        .json({
+          message: "Address updated successfully",
+          address: userAddress,
+        });
     } else {
       // If no address exists, create a new one
       const newAddress = new Address({
@@ -453,17 +481,37 @@ const addAddress = async (req, res) => {
 
       await newAddress.save(); // Save the new address to the database
 
-      return res.status(201).json({ message: "Address added successfully", address: newAddress });
+      return res
+        .status(201)
+        .json({ message: "Address added successfully", address: newAddress });
     }
   } catch (error) {
     // Handle errors and send a response with an error message
     console.log(error.message);
-    console.log(req.body.address.pinCode)
-    res.status(500).json({ message: `Error adding/updating address: ${error.message}` });
+    console.log(req.body.address.pinCode);
+    res
+      .status(500)
+      .json({ message: `Error adding/updating address: ${error.message}` });
   }
 };
 
-
-export default { signup, signin, signOut, verify, resendOtp, getAllUsers , getUsers , getRetailers, bulkInsert, checkAdminAuth, checkRetailerAuth, checkAuth, deleteUser, updateUser, createUser , changePassword, getUserAddress, addAddress };
-
-
+export default {
+  signup,
+  signin,
+  signOut,
+  verify,
+  resendOtp,
+  getAllUsers,
+  getUsers,
+  getRetailers,
+  bulkInsert,
+  checkAdminAuth,
+  checkRetailerAuth,
+  checkAuth,
+  deleteUser,
+  updateUser,
+  createUser,
+  changePassword,
+  getUserAddress,
+  addAddress,
+};

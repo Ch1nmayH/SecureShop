@@ -14,12 +14,15 @@ import Cookies from "js-cookie";
 import ManageProductCard from "../Components/ManageProductCard";
 
 const RetailerPanel = () => {
-  const [activeTab, setActiveTab] = useState("products");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [newProductData, setNewProductData] = useState({
     name: "",
     description: "",
@@ -42,6 +45,28 @@ const RetailerPanel = () => {
       navigate("/login");
     }
   }, [navigate]);
+
+  // Handle password change
+  const handlePasswordChangeSubmit = async (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setPasswordErrorMessage("Passwords do not match");
+      return;
+    }
+    setPasswordErrorMessage("");
+    try {
+      await axios.put(
+        "http://localhost:5000/api/user/changePassword",
+        { password },
+        { withCredentials: true }
+      );
+      setPopupMessage("Password changed successfully");
+      setShowPopup(true);
+    } catch (error) {
+      setPopupMessage("Error changing password");
+      setShowPopup(true);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -169,24 +194,24 @@ const RetailerPanel = () => {
       const formDataToSubmit = new FormData();
       formDataToSubmit.append("name", updatedData.name);
       formDataToSubmit.append("description", updatedData.description);
-  
+
       if (activeTab === "products") {
         // Only append product-specific data
         formDataToSubmit.append("price", updatedData.price);
         formDataToSubmit.append("category", updatedData.category);
         formDataToSubmit.append("stock", updatedData.stock);
-  
+
         // If a new image was selected, append it to the FormData
         if (updatedData.selectedImage) {
           formDataToSubmit.append("image", updatedData.selectedImage);
         }
       }
-  
+
       const apiUrl =
         activeTab === "products"
           ? `http://localhost:5000/api/product/updateproduct/${editData._id}`
           : `http://localhost:5000/api/product/updatecategory/${editData._id}`;
-  
+
       // For product updates, ensure that the headers are set for multipart/form-data
       const requestOptions =
         activeTab === "products"
@@ -202,16 +227,16 @@ const RetailerPanel = () => {
               },
               withCredentials: true,
             };
-  
+
       // Sending the PUT request with the correct content type
-      console.log(apiUrl)
+      console.log(apiUrl);
       await axios.put(apiUrl, formDataToSubmit, requestOptions);
-  
+
       // Success message and UI updates
       setPopupMessage(`${activeTab.slice(0, -1)} updated successfully`);
       setShowPopup(true);
       setIsEditing(false);
-  
+
       // Refetch products or categories after the update
       if (activeTab === "products") {
         fetchProducts();
@@ -222,8 +247,7 @@ const RetailerPanel = () => {
       console.error("Error updating the product/category:", error);
     }
   };
-  
-  
+
   const handleDelete = async (id) => {
     try {
       const apiUrl =
@@ -252,7 +276,7 @@ const RetailerPanel = () => {
   };
 
   useEffect(() => {
-    if (activeTab === "products") {
+    if (activeTab === "products" || activeTab === "dashboard") {
       fetchProducts();
       fetchCategories();
     } else {
@@ -262,91 +286,146 @@ const RetailerPanel = () => {
 
   return (
     <div className="flex min-h-screen">
-      <RetailerSidebar setActiveTab={setActiveTab} />
-      <div className="flex-grow p-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">
-            {activeTab === "products" ? "Manage Products" : "Manage Categories"}
-          </h1>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            onClick={handleAdd}
-          >
-            Add {activeTab === "products" ? "Product" : "Category"}
-          </button>
-        </div>
-
-        <div className="mt-4">
-          {activeTab === "products" && !isAdding && !isEditing && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {products.map((product) => (
-                <ManageProductCard
-                key={product._id}
-                product={product}
-                onEdit={handleEdit} // Pass the onEdit function here
-                onDelete={handleDelete} // Also pass onDelete for delete functionality
-                setEditData={setEditData}
-                setIsEditing={setIsEditing}
-                setPopupMessage={setPopupMessage}
-                setShowPopup={setShowPopup}
-                fetchProducts={fetchProducts}
-              />
-              ))}
+      <RetailerSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <div className="flex-grow p-6 bg-gray-100">
+        {activeTab === "dashboard" ? (
+          <div className="flex justify-center items-center min-h-screen">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-6xl">
+              <div className="bg-white p-6 rounded shadow-md text-center bg-[#915cdb] text-white h-[250px] min-w-[250px] flex flex-col justify-center items-center transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+                <h2 className="text-xl font-bold">Products</h2>
+                <p className="text-2xl">{products.length}</p>
+              </div>
+              <div className="bg-white p-6 rounded shadow-md text-center bg-[#07838a] text-white h-[250px] min-w-[250px] flex flex-col justify-center items-center transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+                <h2 className="text-xl font-bold">Categories</h2>
+                <p className="text-2xl">{categories.length}</p>
+              </div>
             </div>
-          )}
-
-          {activeTab === "categories" && !isAdding && !isEditing && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {categories.map((category) => (
-                <CategoryCard
-                  key={category._id}
-                  category={category}
-                  onEdit={handleEdit} // <-- Ensure this is passed
-                  onDelete={handleDelete} // Assuming you have a handleDelete function
+          </div>
+        ) : (
+          <>
+            {/* Only show the header and button if not on Change Password tab */}
+            {activeTab !== "changePassword" && (
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold">
+                  {activeTab === "products"
+                    ? "Manage Products"
+                    : "Manage Categories"}
+                </h1>
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  onClick={handleAdd}
+                >
+                  Add {activeTab === "products" ? "Product" : "Category"}
+                </button>
+              </div>
+            )}
+  
+            <div className="mt-4">
+              {activeTab === "products" && !isAdding && !isEditing && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {products.map((product) => (
+                    <ManageProductCard
+                      key={product._id}
+                      product={product}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      setEditData={setEditData}
+                      setIsEditing={setIsEditing}
+                      setPopupMessage={setPopupMessage}
+                      setShowPopup={setShowPopup}
+                      fetchProducts={fetchProducts}
+                    />
+                  ))}
+                </div>
+              )}
+  
+              {activeTab === "categories" && !isAdding && !isEditing && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {categories.map((category) => (
+                    <CategoryCard
+                      key={category._id}
+                      category={category}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                    />
+                  ))}
+                </div>
+              )}
+  
+              {isAdding && activeTab === "products" && (
+                <AddProductForm
+                  categories={categories}
+                  newProductData={newProductData}
+                  setNewProductData={setNewProductData}
+                  handleAddInputChange={handleAddInputChange}
+                  handleImageChange={handleImageChange}
+                  handleSubmitAdd={handleSubmitAdd}
+                  setIsAdding={setIsAdding}
                 />
-              ))}
+              )}
+  
+              {isAdding && activeTab === "categories" && (
+                <AddCategoryForm
+                  newCategoryData={newCategoryData}
+                  handleAddInputChange={handleAddInputChange}
+                  handleSubmitAdd={handleSubmitAdd}
+                  setIsAdding={setIsAdding}
+                />
+              )}
+  
+              {isEditing && (
+                <EditForm
+                  data={editData}
+                  categories={categories}
+                  activeTab={activeTab}
+                  onSubmit={handleEditSubmit}
+                  onCancel={() => setIsEditing(false)}
+                  setIsEditing={setIsEditing}
+                />
+              )}
+  
+              {activeTab === "changePassword" && (
+                <div className="bg-white p-4 rounded shadow-md">
+                  <h2 className="text-xl font-bold mb-4">Change Password</h2>
+                  <form onSubmit={handlePasswordChangeSubmit}>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="New Password"
+                      className="block mb-2 p-2 border rounded w-full"
+                      required
+                    />
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm Password"
+                      className="block mb-2 p-2 border rounded w-full"
+                      required
+                    />
+                    <p className="text-red-600 mb-2">
+                      {passwordErrorMessage}
+                    </p>
+                    <button
+                      type="submit"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 text-lg rounded-lg"
+                    >
+                      Save
+                    </button>
+                  </form>
+                </div>
+              )}
             </div>
-          )}
-
-          {isAdding && activeTab === "products" && (
-            <AddProductForm
-              categories={categories}
-              newProductData={newProductData}
-              setNewProductData={setNewProductData}
-              handleAddInputChange={handleAddInputChange}
-              handleImageChange={handleImageChange}
-              handleSubmitAdd={handleSubmitAdd}
-              setIsAdding={setIsAdding}
-            />
-          )}
-
-          {isAdding && activeTab === "categories" && (
-            <AddCategoryForm
-              newCategoryData={newCategoryData}
-              handleAddInputChange={handleAddInputChange}
-              handleSubmitAdd={handleSubmitAdd}
-              setIsAdding={setIsAdding}
-            />
-          )}
-
-          {isEditing && (
-            <EditForm
-              data={editData}
-              categories={categories}
-              activeTab={activeTab}
-              onSubmit={handleEditSubmit}
-              onCancel={() => setIsEditing(false)}
-              setIsEditing={setIsEditing}
-            />
-          )}
-        </div>
-
-        {showPopup && (
-          <Popup message={popupMessage} setShowPopup={setShowPopup} />
+  
+            {showPopup && (
+              <Popup message={popupMessage} setShowPopup={setShowPopup} />
+            )}
+          </>
         )}
       </div>
     </div>
   );
-};
-
+}
+  
 export default RetailerPanel;

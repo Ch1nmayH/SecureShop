@@ -9,8 +9,8 @@ import UserContext from "../utils/CreateContext";
 import Cookies from "js-cookie";
 
 const AdminPanel = () => {
-  const [activeTab, setActiveTab] = useState("users");
-  const [showChangePassword, setShowChangePassword] = useState(false); // No longer needed
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [orders, setOrders] = useState([]); // Placeholder for orders
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [users, setUsers] = useState([]);
@@ -51,7 +51,7 @@ const AdminPanel = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/user/getUsers",
+        "http://localhost:5000/api/user/getUsers?isRetailer=false?isAdmin=false",
         { withCredentials: true }
       );
       setUsers(response.data.users);
@@ -61,12 +61,30 @@ const AdminPanel = () => {
   const fetchRetailers = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/user/getRetailers",
+        "http://localhost:5000/api/user/getUsers?isRetailer=true",
         { withCredentials: true }
       );
-      setRetailers(response.data.retailers);
+      setRetailers(response.data.users);
     } catch (error) {}
   };
+
+  const fetchOrders = async () => {
+    // Placeholder: you can update this once you have an API for fetching orders
+    setOrders([
+      { id: 1, status: "Success" },
+      { id: 2, status: "Pending" },
+    ]);
+  };
+
+  useEffect(() => {
+    if (activeTab === "users") fetchUsers();
+    if (activeTab === "retailers") fetchRetailers();
+    if (activeTab === "dashboard") {
+      fetchUsers();
+      fetchRetailers();
+      fetchOrders(); // Call fetch orders API when it's set
+    }
+  }, [activeTab]);
 
   const handleEdit = (user) => {
     setEditData(user);
@@ -167,7 +185,7 @@ const AdminPanel = () => {
     try {
       await axios.put(
         `http://localhost:5000/api/user/changePassword`,
-         {"newPassword" : newPassword}, 
+        { newPassword: newPassword },
         { withCredentials: true }
       );
       setPopupMessage("Password changed successfully");
@@ -188,7 +206,24 @@ const AdminPanel = () => {
     <div className="flex min-h-screen">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div className="flex-1 p-6 bg-gray-100">
-        {activeTab === "changePassword" ? (
+        {activeTab === "dashboard" ? (
+          <div className="flex justify-center items-center min-h-screen">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-6xl">
+              <div className="bg-white p-6 rounded shadow-md text-center bg-[#915cdb] text-white h-[250px] min-w-[250px] flex flex-col justify-center items-center transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+                <h2 className="text-xl font-bold">Retailers</h2>
+                <p className="text-2xl">{retailers.length}</p>
+              </div>
+              <div className="bg-white p-6 rounded shadow-md text-center bg-[#07838a] text-white h-[250px] min-w-[250px] flex flex-col justify-center items-center transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+                <h2 className="text-xl font-bold">Users</h2>
+                <p className="text-2xl">{users.length}</p>
+              </div>
+              <div className="bg-white p-6 rounded shadow-md text-center bg-[#db4863] text-white h-[250px] min-w-[250px] flex flex-col justify-center items-center transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+                <h2 className="text-xl font-bold">Orders</h2>
+                <p className="text-2xl">{orders.length}</p>
+              </div>
+            </div>
+          </div>
+        ) : activeTab === "changePassword" ? (
           <div className="bg-white p-4 rounded shadow-md">
             <h2 className="text-xl font-bold mb-4">Change Password</h2>
             <form onSubmit={handlePasswordChangeSubmit}>
