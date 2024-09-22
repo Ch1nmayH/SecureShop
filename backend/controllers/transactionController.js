@@ -1,6 +1,7 @@
 import PaymentHashModel from '../models/PaymentHashModel.js'; // Import the Transaction model
 import jwt from 'jsonwebtoken'; // For verifying JWT token
 
+
 // API to create a transaction
 const createTransaction = async (req, res) => {
     try {
@@ -46,7 +47,7 @@ const createTransaction = async (req, res) => {
         // Return success response
         res.status(201).json({
             message: "Transaction created successfully.",
-            transaction: transactionPlaced
+            transaction: savedTransaction._id
         });
     } catch (error) {
         console.error("Error creating transaction:", error);
@@ -56,6 +57,7 @@ const createTransaction = async (req, res) => {
 
 const getParticularTransaction = async (req, res) => {
     try {
+        console.log(req.params)
         const token = req.cookies.token;
         if (!token) {
             return res.status(401).json({ message: "Unauthorized" });

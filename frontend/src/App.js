@@ -21,6 +21,7 @@ import CheckoutPage from "./Pages/CheckoutPage ";
 import SuccessPage from "./Pages/SuccessPage";
 import OrdersPage from "./Pages/OrdersPage";
 import FailedPage from "./Pages/FailedPage";
+import UserPanel from "./Pages/UserPanel";
 
 const Layout = () => (
   <div className="flex flex-col min-h-screen bg-gray-100">
@@ -88,6 +89,10 @@ const router = createBrowserRouter([
       {
      path:"/OrderPage/:orderStatus",
       element:<OrdersPage/>
+      },
+      {
+        path:"/userDashboard",
+        element:<UserPanel/>
       }
     ],
   },

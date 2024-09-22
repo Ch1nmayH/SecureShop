@@ -123,9 +123,9 @@ const CheckoutPage = () => {
       }); // Adjust the endpoint as needed
       // Clear the cart
       clearCart();
-
+    
       // Navigate to success page with order ID
-      setOrderId(response.data.transaction._id);
+      setOrderId(response.data.transaction);
       navigate(`/success/${orderId}`);
     } catch (error) {
       console.error("Error placing order:", error);
@@ -154,15 +154,13 @@ const CheckoutPage = () => {
       try {
         const response = await axios.post("http://localhost:5000/api/transaction/transactions", transactionData, {
           withCredentials: true,
-        }); 
-        setOrderId(response.data.transaction._id);
-        // Adjust the endpoint as needed
+        }); // Adjust the endpoint as needed
       } catch (backendError) {
         console.error("Error posting failed transaction:", backendError);
       }
 
       // Navigate to failed page
-      navigate(`/failed/${orderId}`);
+      navigate("/failed");
     } finally {
       setIsPlacingOrder(false);
     }

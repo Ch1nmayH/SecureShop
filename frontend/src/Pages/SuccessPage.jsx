@@ -21,6 +21,8 @@ const SuccessPage = () => {
           `http://localhost:5000/api/transaction/getParticularTransaction/${orderId}`,
           { withCredentials: true }
         );
+        console.log(orderId)
+        console.log(response.data.transactions[0])
         setOrderedItems(response.data.transactions[0]);
         setTransactionHash(response.data.transactions[0].transactionHash);
       } catch (error) {

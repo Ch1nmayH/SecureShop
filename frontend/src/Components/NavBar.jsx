@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
 import logo from "../Assets/logo.png";
-// import banner from "../Assets/banner.jpg";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import UserContext from "../utils/CreateContext";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -14,8 +14,8 @@ import CartContext from "../utils/CartContext";
 
 const NavBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { cartCount, setCartCount } = useContext(CartContext);
-  const { token, setToken } = useContext(UserContext);
+  const { cartCount } = useContext(CartContext);
+  const { token } = useContext(UserContext);
   const menuLinks = [
     { name: "Home", path: "/" },
     { name: "Products", path: "/products" },
@@ -23,14 +23,6 @@ const NavBar = () => {
   ];
   const navigate = useNavigate();
 
-  const logOut = () => {
-    if(token) {
-      setToken(null);
-      Cookies.remove("token");
-      navigate("/login");
-    }
-     
-  }
   return (
     <div
       className="h-[80px] shadow-2xl bg-gradient-to-r from-cyan-500 to-blue-500 sticky top-0 z-10 transition-all"
@@ -78,7 +70,7 @@ const NavBar = () => {
             </div>
           </div>
 
-          {/* Right: Cart and Login */}
+          {/* Right: Cart and Profile */}
           <div className="flex items-center gap-6 ml-4">
             <div className="relative flex items-center">
               <Link to={"/cart"}>
@@ -91,26 +83,13 @@ const NavBar = () => {
                 {cartCount}
               </span>
             </div>
-            {token ? (
-              <>
-                <Link to={"/login"} onClick={logOut}>
-                  <button className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200">
-                    <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                      Logout
-                    </span>
-                  </button>
-                </Link>
-              </>
-            ) : (
-              <>
-                 <Link to={"/login"}>
-                  <button className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200">
-                    <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                      Login
-                    </span>
-                  </button>
-                </Link>
-              </>
+            {token && (
+              <Link to={"/userDashboard"}>
+                <AccountCircleOutlinedIcon
+                  fontSize="large"
+                  className="text-white"
+                />
+              </Link>
             )}
           </div>
         </div>
