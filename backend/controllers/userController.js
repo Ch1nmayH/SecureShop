@@ -261,7 +261,7 @@ const checkAdminAuth = async (req, res, next) => {
   
     const email = verified.email;
     let User = await user.findOne({ email });
-    console.log(User);
+    // console.log(User);
 
     if (!User.isAdmin) {
       return res
@@ -370,7 +370,7 @@ const changePassword = async (req, res) => {
     if(!verified.id) {
       return res.status(401).json({ message: "You are not authenticated" });
     }
-    const  password  = req.body.newPassword;
+    const  password  = req.body.password;
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     await user.findByIdAndUpdate(verified.id, { password: hashedPassword });
@@ -391,9 +391,9 @@ const getUserAddress = async (req, res) => {
     }
     const id = verified._id;
     const address = await Address.findOne({ userId: id });
-    console.log(address);
-    let addressToString = `${address.name}, ${address.address1}, ${address.address2}, ${address.city}, ${address.state}, ${address.pincode}`;
-    res.status(200).json({ address : addressToString });
+    // console.log(address);
+    let addressToString = `${address.name}, ${address.address1}, ${address.address2}, ${address.city}, ${address.state}, ${address.pinCode}`;
+    res.status(200).json({ address : addressToString, fullAddress: address });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -415,7 +415,8 @@ const addAddress = async (req, res) => {
     const userId = verified.id; // Extract the user ID from the verified token
 
     // Destructure the address fields from request body
-    const { name, address1, address2, city, pinCode, state, mobile } = req.body;
+    const { name, address1, address2, city, pinCode, state, mobile } = req.body.address;
+   
 
     // Validate input fields
     if (!name || !address1 || !city || !pinCode || !state || !mobile) {
@@ -431,7 +432,7 @@ const addAddress = async (req, res) => {
       userAddress.address1 = address1;
       userAddress.address2 = address2;
       userAddress.city = city;
-      userAddress.pincode = pinCode; // Use lowercase `pincode` as per the schema
+      userAddress.pinCode = pinCode; 
       userAddress.state = state;
       userAddress.mobile = mobile;
 
@@ -445,7 +446,7 @@ const addAddress = async (req, res) => {
         address1,
         address2,
         city,
-        pincode: pinCode, // Ensure correct field is used
+        pinCode, // Ensure correct field is used
         state,
         mobile,
       });
@@ -456,6 +457,8 @@ const addAddress = async (req, res) => {
     }
   } catch (error) {
     // Handle errors and send a response with an error message
+    console.log(error.message);
+    console.log(req.body.address.pinCode)
     res.status(500).json({ message: `Error adding/updating address: ${error.message}` });
   }
 };

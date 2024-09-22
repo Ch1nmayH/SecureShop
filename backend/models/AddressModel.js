@@ -8,7 +8,7 @@ const addressSchema = new mongoose.Schema({
   address2: { type: String },
   city: { type: String, required: true },
   state: { type: String, required: true },
-  pincode: { type: String, required: true }, // Ensure the field is `pincode`, not `pinCode`
+  pinCode: { type: String, required: true }, // Ensure the field is `pincode`, not `pinCode`
   mobile: { type: String, required: true },
 }, { timestamps: true });
 

@@ -43,8 +43,9 @@ const createTransaction = async (req, res) => {
 
         // Save the transaction to the database
         const savedTransaction = await newTransaction.save();
-        const transactionPlaced = await PaymentHashModel.findById(savedTransaction._id);
+        // const transactionPlaced = await PaymentHashModel.findById(savedTransaction._id);
         // Return success response
+        console.log(savedTransaction._id);
         res.status(201).json({
             message: "Transaction created successfully.",
             transaction: savedTransaction._id
@@ -57,7 +58,6 @@ const createTransaction = async (req, res) => {
 
 const getParticularTransaction = async (req, res) => {
     try {
-        console.log(req.params)
         const token = req.cookies.token;
         if (!token) {
             return res.status(401).json({ message: "Unauthorized" });

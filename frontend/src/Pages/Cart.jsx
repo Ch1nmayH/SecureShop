@@ -29,7 +29,7 @@ const Cart = () => {
     const fetchAddress = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/user/getUserAddress", {withCredentials:true} ); // Replace with actual API URL
-        console.log("Address response:", response.data);
+        // console.log("Address response:", response.data);
         setAddress(response.data.address || "Karnatak University, Dharwad 580003"); // Fallback if empty address
       } catch (error) {
         console.error("Error fetching address, using default:", error);

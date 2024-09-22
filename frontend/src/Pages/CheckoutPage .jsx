@@ -65,8 +65,6 @@ const CheckoutPage = () => {
     try {
       setIsPlacingOrder(true);
 
-  
-
       // Initialize contract
       const contract = new web3.eth.Contract(OrderManagerABI, CONTRACT_ADDRESS);
 
@@ -88,7 +86,10 @@ const CheckoutPage = () => {
       const receiverAddress = account; // Sending to self for simplicity
 
       // Prepare transaction data
-      const tx = contract.methods.placeOrder(receiverAddress, productsForContract);
+      const tx = contract.methods.placeOrder(
+        receiverAddress,
+        productsForContract
+      );
 
       // Estimate gas
       const gas = await tx.estimateGas({ from: account, value: totalCostWei });
@@ -102,7 +103,7 @@ const CheckoutPage = () => {
         gasPrice,
       });
 
-      console.log("Transaction successful:", receipt.transactionHash);
+      // console.log("Transaction successful:", receipt.transactionHash);
 
       // Prepare data for backend
       const transactionData = {
@@ -118,15 +119,17 @@ const CheckoutPage = () => {
       };
 
       // Post to backend
-      const response = await axios.post("http://localhost:5000/api/transaction/transactions", transactionData, {
-        withCredentials: true,
-      }); // Adjust the endpoint as needed
+      const response = await axios.post(
+        "http://localhost:5000/api/transaction/transactions",
+        transactionData,
+        {
+          withCredentials: true,
+        }
+      ); // Adjust the endpoint as needed
       // Clear the cart
       clearCart();
-    
-      // Navigate to success page with order ID
+
       setOrderId(response.data.transaction);
-      navigate(`/success/${orderId}`);
     } catch (error) {
       console.error("Error placing order:", error);
       alert("An error occurred while placing the order.");
@@ -152,9 +155,13 @@ const CheckoutPage = () => {
 
       // Post to backend
       try {
-        const response = await axios.post("http://localhost:5000/api/transaction/transactions", transactionData, {
-          withCredentials: true,
-        }); // Adjust the endpoint as needed
+        await axios.post(
+          "http://localhost:5000/api/transaction/transactions",
+          transactionData,
+          {
+            withCredentials: true,
+          }
+        ); // Adjust the endpoint as needed
       } catch (backendError) {
         console.error("Error posting failed transaction:", backendError);
       }
@@ -210,11 +217,21 @@ const CheckoutPage = () => {
       window.ethereum.on("chainChanged", handleChainChanged);
 
       return () => {
-        window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
+        window.ethereum.removeListener(
+          "accountsChanged",
+          handleAccountsChanged
+        );
         window.ethereum.removeListener("chainChanged", handleChainChanged);
       };
     }
   }, [web3]);
+
+  useEffect(() => {
+    if (orderId) {
+      // console.log("Order ID:", orderId);
+      navigate(`/success/${orderId}`);
+    }
+  }, [orderId, navigate]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
@@ -271,7 +288,9 @@ const CheckoutPage = () => {
                       {item.quantity}
                     </td>
                     <td className="py-2 px-4 border-b text-center">
-                      {(parseFloat(item.product.price) * item.quantity).toFixed(6)}
+                      {(parseFloat(item.product.price) * item.quantity).toFixed(
+                        6
+                      )}
                     </td>
                   </tr>
                 ))}
