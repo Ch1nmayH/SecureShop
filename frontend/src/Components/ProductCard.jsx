@@ -3,16 +3,21 @@ import { useNavigate } from "react-router-dom";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { motion } from "framer-motion";
 import CartContext from "../utils/CartContext";
+import UserContext from "../utils/CreateContext";
 
 const ProductCard = ({ product }) => {
   const { cartItems, addToCart, removeFromCart } = useContext(CartContext);
   const navigate = useNavigate();
-
+  const {token} = useContext(UserContext);
   const handleCardClick = () => {
     navigate(`/product/${product._id}`);
   };
 
   const handleCartToggle = () => {
+    if(!token){
+      navigate("/login");
+      return;
+    }
     if (isInCart) {
       removeFromCart(product._id); // Remove from cart if it's already in
     } else {

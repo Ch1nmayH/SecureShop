@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CartContext from "../utils/CartContext"; // Import CartContext
+import UserContext from "../utils/CreateContext";
 
 const Product = () => {
   const { productId } = useParams();
@@ -11,11 +12,15 @@ const Product = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { token } = useContext(UserContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/product/getproduct/${productId}`);
+        const response = await axios.get(
+          `http://localhost:5000/api/product/getproduct/${productId}`
+        );
         setProduct(response.data);
       } catch (error) {
         setError(error);
@@ -31,6 +36,10 @@ const Product = () => {
   const isInCart = cartItems.some((item) => item.product._id === productId);
 
   const handleCartToggle = () => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
     if (isInCart) {
       removeFromCart(productId); // If in the cart, remove it
     } else {
@@ -38,7 +47,7 @@ const Product = () => {
     }
   };
 
-  const convertToEth = (priceInInr) => (priceInInr).toFixed(10);
+  const convertToEth = (priceInInr) => priceInInr.toFixed(10);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -67,8 +76,12 @@ const Product = () => {
 
         {/* Product Details */}
         <div className="w-full lg:w-7/12 flex flex-col items-center lg:items-start gap-4">
-          <h1 className="text-3xl font-bold text-gray-800 text-center lg:text-left">{product.title}</h1>
-          <p className="text-gray-600 text-lg text-center lg:text-left">{product.description}</p>
+          <h1 className="text-3xl font-bold text-gray-800 text-center lg:text-left">
+            {product.title}
+          </h1>
+          <p className="text-gray-600 text-lg text-center lg:text-left">
+            {product.description}
+          </p>
           <div className="text-2xl font-semibold text-green-500">
             {convertToEth(product.price)} ETH
           </div>
@@ -76,7 +89,9 @@ const Product = () => {
           {/* Add/Remove from Cart Button */}
           <motion.button
             className={`mt-6 w-full lg:w-auto ${
-              isInCart ? "bg-red-500" : "bg-gradient-to-r from-cyan-500 to-blue-500"
+              isInCart
+                ? "bg-red-500"
+                : "bg-gradient-to-r from-cyan-500 to-blue-500"
             } text-white px-6 py-3 rounded-full flex items-center justify-center gap-2 transition-transform transform hover:scale-105`}
             whileHover={{ scale: 1.05 }}
             onClick={handleCartToggle}

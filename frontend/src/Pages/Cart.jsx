@@ -5,11 +5,13 @@ import CartContext from "../utils/CartContext";
 import { Button, TextField } from "@mui/material";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import axios from "axios"; // Assuming API calls are made using axios
+import UserContext from "../utils/CreateContext";
 
 const Cart = () => {
   const { cartItems, updateCartItemQuantity, removeFromCart, clearCart } =
     useContext(CartContext);
 
+  const {token} = useContext(UserContext);
   const [totalPrice, setTotalPrice] = useState(0);
   const [address, setAddress] = useState(""); // Default address
   const [isEditing, setIsEditing] = useState(false); // Toggle for showing/hiding form
@@ -24,7 +26,12 @@ const Cart = () => {
   });
   const navigate = useNavigate();
 
+
   useEffect(() => {
+
+    if(!token){
+      navigate("/login");
+    }
     // Fetch address from API
     const fetchAddress = async () => {
       try {
