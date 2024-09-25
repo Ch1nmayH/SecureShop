@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion"; // for animations
 
@@ -13,8 +13,7 @@ const OTPVerification = () => {
   const [loading, setLoading] = useState(false);
 
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const token = queryParams.get("token"); // Extract JWT token from URL
+  const token = useParams().token;
 
   useEffect(() => {
     if (countdown > 0) {

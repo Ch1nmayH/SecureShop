@@ -105,7 +105,7 @@ const Register = () => {
       );
 
       if (response.status === 201) {
-        navigate("/otp-verification"); // Redirect to OTP verification page
+        navigate(`/otp-verification/${response.data.token}`); // Redirect to OTP verification page
       } else if (response.status === 200 && response.data.message === "User already exists with this email") {
         setEmailError("Email already exists");
       } else if(response.status === 200 && response.data.message === "User already exists with this mobile number") {

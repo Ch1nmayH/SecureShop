@@ -32,6 +32,14 @@ const signup = async (req, res, next) => {
       mobile,
       password,
     });
+
+    const encryptedEmail = jwt.sign(
+      { email: newUser.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
     let otp = generateOtp();
     const mailOptions = {
       from: process.env.EMAIL,
@@ -47,16 +55,18 @@ const signup = async (req, res, next) => {
         console.log(`Email sent: ${info.response}`);
       }
     });
-
-    const newOtp = await Otp.create({
+    
+    const newOtpModel = await Otp.create({
       email,
       otp,
     });
+    console.log(newOtpModel);
 
     return res.status(201).json({
       message:
         "User Created Successfully, an otp has been sent to your email for account activation and email confirmation.",
       otp: otp,
+      token: encryptedEmail,
     });
     next();
   } catch (error) {
@@ -132,13 +142,17 @@ const signOut = async (req, res, next) => {
 const verify = async (req, res, next) => {
   let { token, otp } = req.body;
   otp = parseInt(otp);
+  console.log(token, otp);
+ 
   try {
     const decodedData = jwt.verify(token, process.env.JWT_SECRET);
     if (!decodedData) {
       return res.status(200).json({ message: "Invalid token" });
     }
+    console.log(decodedData);
     const email = decodedData.email;
     const existingOtp = await Otp.findOne({ email });
+    console.log(existingOtp);
     if (existingOtp.verified)
       return res.status(200).json({ message: "Email already verified" });
 
@@ -147,9 +161,11 @@ const verify = async (req, res, next) => {
       await user.findOne({ email }).updateOne({ isVerified: true });
       return res.status(200).json({ message: "Email Verified Successfully" });
     }
+    
 
     return res.status(200).json({ message: "Invalid OTP" });
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({ message: error.message });
   }
 };

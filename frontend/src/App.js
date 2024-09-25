@@ -73,7 +73,7 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
-        path: "/otp-verification",
+        path: "/otp-verification/:token",
         element: <OTPVerification />,
       },
 
