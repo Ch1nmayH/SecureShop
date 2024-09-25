@@ -209,15 +209,15 @@ const AdminPanel = () => {
         {activeTab === "dashboard" ? (
           <div className="flex justify-center items-center min-h-screen">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-6xl">
-              <div className="bg-white p-6 rounded shadow-md text-center bg-[#915cdb] text-white h-[250px] min-w-[250px] flex flex-col justify-center items-center transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+              <div className="p-6 rounded shadow-md text-center bg-[#915cdb] text-white h-[250px] min-w-[250px] flex flex-col justify-center items-center transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
                 <h2 className="text-xl font-bold">Retailers</h2>
                 <p className="text-2xl">{retailers.length}</p>
               </div>
-              <div className="bg-white p-6 rounded shadow-md text-center bg-[#07838a] text-white h-[250px] min-w-[250px] flex flex-col justify-center items-center transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+              <div className="p-6 rounded shadow-md text-center bg-[#07838a] text-white h-[250px] min-w-[250px] flex flex-col justify-center items-center transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
                 <h2 className="text-xl font-bold">Users</h2>
                 <p className="text-2xl">{users.length}</p>
               </div>
-              <div className="bg-white p-6 rounded shadow-md text-center bg-[#db4863] text-white h-[250px] min-w-[250px] flex flex-col justify-center items-center transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+              <div className="p-6 rounded shadow-md text-center bg-[#db4863] text-white h-[250px] min-w-[250px] flex flex-col justify-center items-center transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
                 <h2 className="text-xl font-bold">Orders</h2>
                 <p className="text-2xl">{orders.length}</p>
               </div>
