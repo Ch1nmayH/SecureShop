@@ -6,6 +6,7 @@ import { Button, TextField } from "@mui/material";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import axios from "axios"; // Assuming API calls are made using axios
 import UserContext from "../utils/CreateContext";
+import Cookies from "js-cookie";
 
 const Cart = () => {
   const { cartItems, updateCartItemQuantity, removeFromCart, clearCart } =
@@ -28,9 +29,25 @@ const Cart = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!token) {
+    if (!Cookies.get("token")) {
       navigate("/login");
     }
+    const response = axios.get(
+      "http://localhost:5000/api/user/checkAuth",
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(response.data);
+    response
+      .then((res) => {})
+      .catch((err) => {
+        navigate("/unauthenticated");
+      });
+  }, []);
+  
+
+  useEffect(() => {
     // Fetch address from API
     const fetchAddress = async () => {
       try {

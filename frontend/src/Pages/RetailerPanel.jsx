@@ -44,7 +44,20 @@ const RetailerPanel = () => {
     if (!Cookies.get("token")) {
       navigate("/login");
     }
-  }, [navigate]);
+    const response = axios.get(
+      "http://localhost:5000/api/user/checkRetailerAuth",
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(response.data);
+    response
+      .then((res) => {})
+      .catch((err) => {
+        navigate("/notAuthorized");
+      });
+  }, []);
+  
 
   // Handle password change
   const handlePasswordChangeSubmit = async (e) => {

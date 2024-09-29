@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 
 const SuccessPage = () => {
@@ -11,7 +12,23 @@ const SuccessPage = () => {
   const [orderedItems, setOrderedItems] = useState([]);
   const [transactionHash, setTransactionHash] = useState(null);
 
-  // Destructure the state passed from CheckoutPage
+  useEffect(() => {
+    if (!Cookies.get("token")) {
+      navigate("/login");
+    }
+    const response = axios.get(
+      "http://localhost:5000/api/user/checkAuth",
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(response.data);
+    response
+      .then((res) => {})
+      .catch((err) => {
+        navigate("/unauthenticated");
+      });
+  }, []);
 
   useEffect(() => {
     // Fetch the transaction details using the orderId

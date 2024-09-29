@@ -7,7 +7,6 @@ import jwt from "jsonwebtoken";
 import Address from "../models/AddressModel.js";
 import ForgotPassword from "../models/forgotPasswordOtp.js";
 
-
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -57,12 +56,11 @@ const signup = async (req, res, next) => {
         console.log(`Email sent: ${info.response}`);
       }
     });
-    
+
     const newOtpModel = await Otp.create({
       email,
       otp,
     });
-    console.log(newOtpModel);
 
     return res.status(201).json({
       message:
@@ -144,17 +142,14 @@ const signOut = async (req, res, next) => {
 const verify = async (req, res, next) => {
   let { token, otp } = req.body;
   otp = parseInt(otp);
-  console.log(token, otp);
- 
+
   try {
     const decodedData = jwt.verify(token, process.env.JWT_SECRET);
     if (!decodedData) {
       return res.status(200).json({ message: "Invalid token" });
     }
-    console.log(decodedData);
     const email = decodedData.email;
     const existingOtp = await Otp.findOne({ email });
-    console.log(existingOtp);
     if (existingOtp.verified)
       return res.status(200).json({ message: "Email already verified" });
 
@@ -163,7 +158,6 @@ const verify = async (req, res, next) => {
       await user.findOne({ email }).updateOne({ isVerified: true });
       return res.status(200).json({ message: "Email Verified Successfully" });
     }
-    
 
     return res.status(200).json({ message: "Invalid OTP" });
   } catch (error) {
@@ -285,7 +279,6 @@ const checkAdminAuth = async (req, res, next) => {
 
     const email = verified.email;
     let User = await user.findOne({ email });
-    // console.log(User);
 
     if (!User.isAdmin) {
       return res
@@ -313,13 +306,12 @@ const checkRetailerAuth = async (req, res, next) => {
     }
     const email = verified.email;
     let User = await user.findOne({ email });
-
-    if (!User.isRetailer || !user.isAdmin) {
-      return res
-        .status(401)
-        .json({
+    if (!User.isRetailer) {
+      if (!User.isAdmin) {
+        return res.status(401).json({
           message: "You need to be a retailer or an admin to view this page",
         });
+      }
     }
     return res.status(200).json({ message: "success" });
 
@@ -430,8 +422,6 @@ const getUserAddress = async (req, res) => {
     }
     const id = verified.id;
     const address = await Address.findOne({ user: id });
-    console.log(address)
-    // console.log(address);
     let addressToString = `${address.name}, ${address.address1}, ${address.address2}, ${address.city}, ${address.state}, ${address.pinCode}`;
     res.status(200).json({ address: addressToString, fullAddress: address });
   } catch (error) {
@@ -443,7 +433,6 @@ const addAddress = async (req, res) => {
   try {
     // Extract the token from cookies and verify it
     const token = req.cookies.token;
-    console.log(req.body);
     if (!token) {
       return res.status(401).json({ message: "Authentication token missing" });
     }
@@ -454,7 +443,7 @@ const addAddress = async (req, res) => {
     }
 
     const userId = verified.id; // Extract the user ID from the verified token
-    
+
     // Destructure the address fields from request body
     const { name, address1, address2, city, pinCode, state, mobile } =
       req.body.address;
@@ -480,12 +469,10 @@ const addAddress = async (req, res) => {
       userAddress.mobile = mobile;
 
       await userAddress.save(); // Save the updated address
-      return res
-        .status(200)
-        .json({
-          message: "Address updated successfully",
-          address: userAddress,
-        });
+      return res.status(200).json({
+        message: "Address updated successfully",
+        address: userAddress,
+      });
     } else {
       // If no address exists, create a new one
       const newAddress = new Address({
@@ -507,8 +494,6 @@ const addAddress = async (req, res) => {
     }
   } catch (error) {
     // Handle errors and send a response with an error message
-    console.log(error.message);
-    console.log(req.body.address.pinCode);
     res
       .status(500)
       .json({ message: `Error adding/updating address: ${error.message}` });
@@ -523,25 +508,25 @@ const forgotPassword = async (req, res) => {
       return res.status(400).json({ message: "User not found" });
     }
 
-    if(!existingUser.isVerified){
+    if (!existingUser.isVerified) {
       return res.status(400).json({ message: "User not verified" });
     }
 
-    if(existingUser.isAdmin){
+    if (existingUser.isAdmin) {
       return res.status(400).json({ message: "Admin cannot reset password" });
     }
 
-    if(existingUser.isRetailer){
-      return res.status(400).json({ message: "Retailer cannot reset password" });
+    if (existingUser.isRetailer) {
+      return res
+        .status(400)
+        .json({ message: "Retailer cannot reset password" });
     }
     let forgotPasswordOtp = generateOtp();
 
-    const alreadyExists = await ForgotPassword.findOne({ email});
-    if(alreadyExists){
+    const alreadyExists = await ForgotPassword.findOne({ email });
+    if (alreadyExists) {
       await ForgotPassword.findOne({ email }).updateOne({ forgotPasswordOtp });
-    }
-
-    else {
+    } else {
       const ForgotPasswordOtpSave = await ForgotPassword.create({
         email,
         forgotPasswordOtp,
@@ -562,8 +547,6 @@ const forgotPassword = async (req, res) => {
       }
     });
 
-  
-
     const encryptedEmail = jwt.sign(
       { email: existingUser.email },
       process.env.JWT_SECRET,
@@ -572,13 +555,14 @@ const forgotPassword = async (req, res) => {
       }
     );
 
-    return res.status(200).json({ message: "Otp sent successfully", token: encryptedEmail });
-
+    return res
+      .status(200)
+      .json({ message: "Otp sent successfully", token: encryptedEmail });
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ message: error.message });
   }
-}
+};
 
 const forgotPasswordVerify = async (req, res) => {
   let { token, otp } = req.body;
@@ -588,31 +572,30 @@ const forgotPasswordVerify = async (req, res) => {
     if (!decodedData) {
       return res.status(200).json({ message: "Invalid token" });
     }
-    console.log(decodedData);
     const email = decodedData.email;
     const existingOtp = await ForgotPassword.findOne({ email });
-
-
 
     if (!existingOtp) {
       return res.status(200).json({ message: "Invalid Email" });
     }
 
     let randomSecret = Math.floor(1000 + Math.random() * 9000).toString();
-    const secret = jwt.sign(
-      { secret: randomSecret },
-      process.env.JWT_SECRET,
-    );
+    const secret = jwt.sign({ secret: randomSecret }, process.env.JWT_SECRET);
     if (existingOtp.forgotPasswordOtp === otp) {
-      const addSecret = await ForgotPassword.updateOne({ email, secret:randomSecret });
-      return res.status(200).json({ message: "Otp Verified Successfully", token, secret });
+      const addSecret = await ForgotPassword.updateOne({
+        email,
+        secret: randomSecret,
+      });
+      return res
+        .status(200)
+        .json({ message: "Otp Verified Successfully", token, secret });
     }
     return res.status(200).json({ message: "Invalid OTP" });
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ message: error.message });
   }
-}
+};
 
 const newPassword = async (req, res) => {
   try {
@@ -631,7 +614,10 @@ const newPassword = async (req, res) => {
       return res.status(200).json({ message: "Invalid secret" });
     }
 
-    const matchSecret = await ForgotPassword.findOne({ email, secret: decodedSecret.secret });
+    const matchSecret = await ForgotPassword.findOne({
+      email,
+      secret: decodedSecret.secret,
+    });
     if (!matchSecret) {
       return res.status(200).json({ message: "Invalid secret" });
     }
@@ -643,7 +629,7 @@ const newPassword = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}
+};
 
 export default {
   signup,
@@ -667,5 +653,4 @@ export default {
   forgotPassword,
   forgotPasswordVerify,
   newPassword,
-
 };

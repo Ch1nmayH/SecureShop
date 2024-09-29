@@ -4,6 +4,7 @@ import Web3 from "web3";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import OrderManager from "../Contract/OrderManager.json"; // Adjust the path as needed
+import Cookies from "js-cookie";
 
 const CheckoutPage = () => {
   const OrderManagerABI = OrderManager.abi;
@@ -15,10 +16,33 @@ const CheckoutPage = () => {
   const [orderId, setOrderId] = useState(null); // Generate unique order ID
   const navigate = useNavigate();
 
+
+  useEffect(() => {
+    if (!Cookies.get("token")) {
+      navigate("/login");
+    }
+    const response = axios.get(
+      "http://localhost:5000/api/user/checkAuth",
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(response.data);
+    response
+      .then((res) => {})
+      .catch((err) => {
+        navigate("/unauthenticated");
+      });
+  }, []);
+
+
   // Replace with your contract's deployed address
   const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
 
   const [web3, setWeb3] = useState(null);
+
+
+
 
   // Function to connect to MetaMask
   const connectWallet = async () => {

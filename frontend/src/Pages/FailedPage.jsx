@@ -1,10 +1,29 @@
-// src/pages/FailedPage.jsx
-
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import axios from "axios";
+
 
 const FailedPage = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!Cookies.get("token")) {
+      navigate("/login");
+    }
+    const response = axios.get(
+      "http://localhost:5000/api/user/checkAuth",
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(response.data);
+    response
+      .then((res) => {})
+      .catch((err) => {
+        navigate("/unauthenticated");
+      });
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6 mt-[200px]">

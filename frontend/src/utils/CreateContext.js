@@ -1,5 +1,8 @@
 import { createContext } from "react";
 
-const UserContext = createContext(0);
+const UserContext = createContext({
+  token: null,
+  setToken: () => {},
+});
 
 export default UserContext;

@@ -1,11 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import Cookies from 'js-cookie';
+
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
   const orderStatusParam = useParams().orderStatus;
+
+  useEffect(() => {
+    if (!Cookies.get("token")) {
+      navigate("/login");
+    }
+    const response = axios.get(
+      "http://localhost:5000/api/user/checkAuth",
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(response.data);
+    response
+      .then((res) => {})
+      .catch((err) => {
+        navigate("/unauthenticated");
+      });
+  }, []);
 
   useEffect(() => {
     const fetchOrders = async () => {
