@@ -5,6 +5,7 @@ const otpSchema = new mongoose.Schema({
 	otp: { type: Number, required: true },
 	verified: { type: Boolean, default: false },
 	createdAt: { type: Date, default: Date.now, expires: 600 }, // Apply expiration to `createdAt`
+
 });
 
 const otpModel = mongoose.model("Otp", otpSchema);

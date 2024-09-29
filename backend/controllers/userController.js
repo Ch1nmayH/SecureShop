@@ -5,6 +5,8 @@ import generateOtp from "../config/otpGenerator.js";
 import transporter from "../config/mailTransporter.js";
 import jwt from "jsonwebtoken";
 import Address from "../models/AddressModel.js";
+import ForgotPassword from "../models/forgotPasswordOtp.js";
+
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -513,6 +515,136 @@ const addAddress = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const existingUser = await user.findOne({ email });
+    if (!existingUser) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    if(!existingUser.isVerified){
+      return res.status(400).json({ message: "User not verified" });
+    }
+
+    if(existingUser.isAdmin){
+      return res.status(400).json({ message: "Admin cannot reset password" });
+    }
+
+    if(existingUser.isRetailer){
+      return res.status(400).json({ message: "Retailer cannot reset password" });
+    }
+    let forgotPasswordOtp = generateOtp();
+
+    const alreadyExists = await ForgotPassword.findOne({ email});
+    if(alreadyExists){
+      await ForgotPassword.findOne({ email }).updateOne({ forgotPasswordOtp });
+    }
+
+    else {
+      const ForgotPasswordOtpSave = await ForgotPassword.create({
+        email,
+        forgotPasswordOtp,
+      });
+    }
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "Forgot Password",
+      text: `Your OTP reset your password is ${forgotPasswordOtp}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(`Email sent: ${info.response}`);
+      }
+    });
+
+  
+
+    const encryptedEmail = jwt.sign(
+      { email: existingUser.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    return res.status(200).json({ message: "Otp sent successfully", token: encryptedEmail });
+
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+}
+
+const forgotPasswordVerify = async (req, res) => {
+  let { token, otp } = req.body;
+  otp = parseInt(otp);
+  try {
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decodedData) {
+      return res.status(200).json({ message: "Invalid token" });
+    }
+    console.log(decodedData);
+    const email = decodedData.email;
+    const existingOtp = await ForgotPassword.findOne({ email });
+
+
+
+    if (!existingOtp) {
+      return res.status(200).json({ message: "Invalid Email" });
+    }
+
+    let randomSecret = Math.floor(1000 + Math.random() * 9000).toString();
+    const secret = jwt.sign(
+      { secret: randomSecret },
+      process.env.JWT_SECRET,
+    );
+    if (existingOtp.forgotPasswordOtp === otp) {
+      const addSecret = await ForgotPassword.updateOne({ email, secret:randomSecret });
+      return res.status(200).json({ message: "Otp Verified Successfully", token, secret });
+    }
+    return res.status(200).json({ message: "Invalid OTP" });
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+}
+
+const newPassword = async (req, res) => {
+  try {
+    const { password, token, secret } = req.body;
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decodedData) {
+      return res.status(200).json({ message: "Invalid token" });
+    }
+    const email = decodedData.email;
+    const existingUser = await user.findOne({ email });
+    if (!existingUser) {
+      return res.status(200).json({ message: "Invalid user" });
+    }
+    const decodedSecret = jwt.verify(secret, process.env.JWT_SECRET);
+    if (!decodedSecret) {
+      return res.status(200).json({ message: "Invalid secret" });
+    }
+
+    const matchSecret = await ForgotPassword.findOne({ email, secret: decodedSecret.secret });
+    if (!matchSecret) {
+      return res.status(200).json({ message: "Invalid secret" });
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    await user.findOne({ email }).updateOne({ password: hashedPassword });
+    await ForgotPassword.deleteOne({ email });
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
 export default {
   signup,
   signin,
@@ -532,4 +664,8 @@ export default {
   changePassword,
   getUserAddress,
   addAddress,
+  forgotPassword,
+  forgotPasswordVerify,
+  newPassword,
+
 };

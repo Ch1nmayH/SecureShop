@@ -39,7 +39,14 @@ router.post("/createUser", adminAuth,  userController.createUser);
 //Change password
 router.put("/changePassword", auth,  userController.changePassword);
 
+//forgot password
+router.post("/forgotPassword", userController.forgotPassword);
 
+//forgot password verify
+router.post("/forgotPasswordVerify", userController.forgotPasswordVerify);
+
+//new password
+router.post("/newPassword", userController.newPassword);
 
 //get user Address
 router.get("/getUserAddress", auth,  userController.getUserAddress);

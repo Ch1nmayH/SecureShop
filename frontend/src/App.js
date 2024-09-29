@@ -22,6 +22,9 @@ import SuccessPage from "./Pages/SuccessPage";
 import OrdersPage from "./Pages/OrdersPage";
 import FailedPage from "./Pages/FailedPage";
 import UserPanel from "./Pages/UserPanel";
+import ForgotPassword from "./Pages/ForgotPassword";
+import ForgotPasswordVerification from "./Pages/ForgotPasswordVerification";
+import NewPassword from "./Pages/NewPassword";
 
 const Layout = () => (
   <div className="flex flex-col min-h-screen bg-gray-100">
@@ -77,6 +80,19 @@ const router = createBrowserRouter([
         element: <OTPVerification />,
       },
 
+      {
+        path: "/forgotPassword",
+        element: <ForgotPassword/>
+      },
+
+      {
+        path: "/forgotPasswordVerification/:token",
+        element : <ForgotPasswordVerification/>
+      },
+      {
+        path: "/newPassword/:token/:secret",
+        element : <NewPassword/>
+      },
       {
         path:"/success/:orderId",
         element:<SuccessPage/>

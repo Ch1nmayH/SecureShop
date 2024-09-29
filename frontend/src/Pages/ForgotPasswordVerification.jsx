@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
-import {  useNavigate, useParams } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import UserContext from "../utils/CreateContext";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import { motion } from "framer-motion"; // for animations
+import { motion } from "framer-motion";
 
-const OTPVerification = () => {
+const ForgotPasswordVerification = () => {
   const navigate = useNavigate();
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [countdown, setCountdown] = useState(300); // 5 minutes in seconds
@@ -11,8 +14,15 @@ const OTPVerification = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const userToken = useParams().token;
+  const {token} = useContext(UserContext);
 
-  const token = useParams().token;
+
+
+  useEffect(() => {
+    if (token) navigate('/')  
+}, [token])
+
 
   useEffect(() => {
     if (countdown > 0) {
@@ -40,17 +50,15 @@ const OTPVerification = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/user/verify",
-        { token, otp: otpCode }
+        "http://localhost:5000/api/user/forgotPasswordVerify",
+        { token:userToken, otp: otpCode }
       );
 
       if (response.status === 200) {
-        if (response.data.message === "Email already verified") {
-          setErrorMessage("User is already verified!");
-          setSuccessMessage("");
+        if (response.data.message === "Otp Verified Successfully") {
+          setSuccessMessage("Otp Verified Successfully");
           setTimeout(() => {
-            // Redirect to login page after 2 seconds
-            navigate("/login");
+            navigate(`/newPassword/${response.data.token}/${response.data.secret}`);
           }, 2000);
         } else if (response.data.message === "Invalid token") {
           setErrorMessage("Invalid user or URL.");
@@ -58,34 +66,36 @@ const OTPVerification = () => {
         } else if (response.data.message === "Invalid OTP") {
           setErrorMessage("Incorrect OTP. Please try again.");
           setSuccessMessage("");
-        } else if (response.data.message === "Email Verified Successfully") {
-          setSuccessMessage("Email verified successfully!");
-          setErrorMessage("");
-          setTimeout(() => {
-            // Redirect to login page after 2 seconds
-            navigate("/login");
-          }, 2000);
+        } else if (response.data.message === "Invalid Email") {
+          setErrorMessage("Invalid User.");
+          setSuccessMessage("");
         }
       }
-
-      setLoading(false);
     } catch (error) {
-      setErrorMessage("Invalid OTP.");
-      setLoading(false);
+      console.error(error);
     }
   };
 
-  const handleResend = () => {
-    setCountdown(300); // Reset the countdown
-    setResendDisabled(true);
-    // Resend OTP logic here, similar to the one in `handleSubmit`
-  };
+  // const handleResend = async () => {
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:5000/api/user/forgotpassword",
+  //       { email }
+  //     );
+  //     if (response.status === 200) {
+  //       setSuccessMessage("Email sent successfully!");
+  //       setErrorMessage("");
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-semibold text-center mb-6">
-          OTP Verification
+          Forgot Password Verification
         </h2>
 
         {/* Error Message */}
@@ -135,7 +145,7 @@ const OTPVerification = () => {
             {loading ? "Verifying..." : "Submit"}
           </button>
 
-          <button
+          {/* <button
             type="button"
             onClick={handleResend}
             disabled={resendDisabled}
@@ -147,11 +157,11 @@ const OTPVerification = () => {
           >
             Resend OTP ({Math.floor(countdown / 60)}:
             {("0" + (countdown % 60)).slice(-2)})
-          </button>
+          </button> */}
         </form>
       </div>
     </div>
   );
 };
 
-export default OTPVerification;
+export default ForgotPasswordVerification;
