@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import ProductCard from "../Components/ProductCard";
 import LoadingSpinner from "../Components/LoadingSpinner";
@@ -7,6 +7,7 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,15 +22,14 @@ const Products = () => {
       } catch (error) {
         console.error("There was an error fetching the products!", error);
       } finally {
-        setTimeout(() => setLoading(false), 500);
+        setLoading(false);
       }
     };
 
     const fetchCategories = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/product/getcategories");
-        // Assuming each category has both id and name
-        setCategories(response.data); // Store full category objects (with id and name)
+        setCategories(response.data);
       } catch (error) {
         console.error("There was an error fetching the categories!", error);
       }
@@ -40,20 +40,22 @@ const Products = () => {
   }, []);
 
   const handleCategoryChange = (e) => {
-    const selectedCategoryName = e.target.value;
-    if (selectedCategoryName === "all") {
-      setSelectedCategoryId("all");
-    } else {
-      const selectedCategory = categories.find(category => category.name === selectedCategoryName);
-      if (selectedCategory) {
-        setSelectedCategoryId(selectedCategory._id); // Use the category's ID to filter products
-      }
-    }
+    const selectedId = e.target.value;
+    setSelectedCategoryId(selectedId);
   };
 
-  const filteredProducts = selectedCategoryId === "all"
-    ? products
-    : products.filter(product => product.category === selectedCategoryId);
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      const categoryMatch = selectedCategoryId === "all" || product.category === selectedCategoryId;
+
+      const searchLower = searchQuery.toLowerCase();
+      const productNameMatch = product.name.toLowerCase().includes(searchLower);
+      const category = categories.find(cat => cat._id === product.category);
+      const categoryNameMatch = category ? category.name.toLowerCase().includes(searchLower) : false;
+
+      return categoryMatch && (productNameMatch || categoryNameMatch);
+    });
+  }, [products, selectedCategoryId, searchQuery, categories]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -66,7 +68,21 @@ const Products = () => {
   return (
     <div className="container mx-auto px-4 py-8 md:mt-[40px]">
       <h1 className="text-3xl font-bold mb-8 text-center">Featured Products</h1>
-      <div className="mb-6 flex justify-center">
+
+      {/* Search Bar and Category Filter */}
+      <div className="mb-6 flex flex-col md:flex-row items-center justify-center gap-4">
+        {/* Accessible Label */}
+        <label htmlFor="product-search" className="sr-only">Search Products</label>
+        <input
+          id="product-search"
+          type="text"
+          placeholder="Search by product name or category..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border w-full max-w-[400px] px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+
+        {/* Category Dropdown */}
         <select
           value={selectedCategoryId}
           onChange={handleCategoryChange}
@@ -74,17 +90,19 @@ const Products = () => {
         >
           <option value="all">All Categories</option>
           {categories.map(category => (
-            <option key={category._id} value={category.name}>
+            <option key={category._id} value={category._id}>
               {category.name}
             </option>
           ))}
         </select>
       </div>
+
+      {/* Products Grid */}
       <div className="flex flex-wrap justify-center">
         {filteredProducts.map((product) => (
           <ProductCard
             key={product._id}
-            product={product} // Pass product directly without conversion
+            product={product}
           />
         ))}
       </div>
