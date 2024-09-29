@@ -11,32 +11,31 @@ const Cart = () => {
   const { cartItems, updateCartItemQuantity, removeFromCart, clearCart } =
     useContext(CartContext);
 
-  const {token} = useContext(UserContext);
+  const { token } = useContext(UserContext);
   const [totalPrice, setTotalPrice] = useState(0);
   const [address, setAddress] = useState(""); // Default address
   const [isEditing, setIsEditing] = useState(false); // Toggle for showing/hiding form
+  const [fullAddress, setFullAddress] = useState(null);
   const [formValues, setFormValues] = useState({
     name: "",
     address1: "",
     address2: "",
     city: "",
     state: "",
-    pincode: "",
+    pinCode: "",
     mobile: ""
   });
   const navigate = useNavigate();
 
-
   useEffect(() => {
-
-    if(!token){
+    if (!token) {
       navigate("/login");
     }
     // Fetch address from API
     const fetchAddress = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/user/getUserAddress", {withCredentials:true} ); // Replace with actual API URL
-        // console.log("Address response:", response.data);
+        const response = await axios.get("http://localhost:5000/api/user/getUserAddress", { withCredentials: true }); // Replace with actual API URL
+        console.log("Address response:", response.data);
         setAddress(response.data.address || "Karnatak University, Dharwad 580003"); // Fallback if empty address
       } catch (error) {
         console.error("Error fetching address, using default:", error);
@@ -44,8 +43,36 @@ const Cart = () => {
       }
     };
 
+    const fetchFullAddress = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/user/getUserAddress",
+          { withCredentials: true }
+        );
+        setFullAddress(response.data.fullAddress);
+      } catch (error) {
+        console.error("Error fetching address:", error);
+      }
+    };
+
     fetchAddress();
-  }, []);
+    fetchFullAddress();
+  }, [token, navigate]);
+
+  // Update formValues when fullAddress changes
+  useEffect(() => {
+    if (fullAddress) {
+      setFormValues({
+        name: fullAddress.name || "",
+        address1: fullAddress.address1 || "",
+        address2: fullAddress.address2 || "",
+        city: fullAddress.city || "",
+        state: fullAddress.state || "",
+        pinCode: fullAddress.pinCode || "",
+        mobile: fullAddress.mobile || ""
+      });
+    }
+  }, [fullAddress]);
 
   useEffect(() => {
     if (cartItems.length > 0) {
@@ -98,26 +125,59 @@ const Cart = () => {
     try {
       const updatedAddress = `
         ${formValues.name}, ${formValues.address1}, ${formValues.address2}, 
-        ${formValues.city}, ${formValues.state} - ${formValues.pincode}, 
+        ${formValues.city}, ${formValues.state} - ${formValues.pinCode}, 
         Mobile: ${formValues.mobile}`;
-        
+
       setAddress(updatedAddress);
 
       // Send to backend
-      await axios.post("http://localhost:5000/api/user/addAddress", {
+      await axios.post(
+        "http://localhost:5000/api/user/addAddress",
+        {
+          address: {
+            name: formValues.name,
+            address1: formValues.address1,
+            address2: formValues.address2,
+            city: formValues.city,
+            state: formValues.state,
+            pinCode: formValues.pinCode,
+            mobile: formValues.mobile,
+          }
+        },
+        { withCredentials: true }
+      );
+
+      // Optionally, update fullAddress state if needed
+      setFullAddress({
         name: formValues.name,
         address1: formValues.address1,
         address2: formValues.address2,
         city: formValues.city,
         state: formValues.state,
-        pinCode: formValues.pincode,
+        pinCode: formValues.pinCode,
         mobile: formValues.mobile,
-      } , {withCredentials:true});
+      });
 
       setIsEditing(false); // Close the form on success
     } catch (error) {
       console.error("Error saving address:", error);
     }
+  };
+
+  // Enter editing mode and set formValues with current fullAddress
+  const handleEditAddress = () => {
+    if (fullAddress) {
+      setFormValues({
+        name: fullAddress.name || "",
+        address1: fullAddress.address1 || "",
+        address2: fullAddress.address2 || "",
+        city: fullAddress.city || "",
+        state: fullAddress.state || "",
+        pinCode: fullAddress.pinCode || "",
+        mobile: fullAddress.mobile || ""
+      });
+    }
+    setIsEditing(true);
   };
 
   // Cancel editing
@@ -176,10 +236,10 @@ const Cart = () => {
               />
               <TextField
                 label="Pincode"
-                name="pincode"
+                name="pinCode"
                 fullWidth
                 margin="normal"
-                value={formValues.pincode}
+                value={formValues.pinCode}
                 onChange={handleInputChange}
               />
               <TextField
@@ -211,7 +271,7 @@ const Cart = () => {
                 <Button
                   variant="outlined"
                   color="primary"
-                  onClick={() => setIsEditing(true)}
+                  onClick={handleEditAddress}
                 >
                   Change Address
                 </Button>
@@ -260,12 +320,12 @@ const Cart = () => {
               <h2 className="text-xl font-bold mb-4">PRICE DETAILS</h2>
               <div className="flex justify-between mb-2">
                 <span>Price ({cartItems.length} items)</span>
-                <span>{totalPrice.toFixed(10)} ETH</span>
+                <span>{totalPrice.toFixed(2)} ETH</span>
               </div>
               <hr className="my-2" />
               <div className="flex justify-between font-bold text-xl">
                 <span>Total Amount</span>
-                <span>{totalPrice.toFixed(10)} ETH</span>
+                <span>{totalPrice.toFixed(2)} ETH</span>
               </div>
               <button
                 className="bg-[#233745] text-white w-full mt-4 py-3 rounded-lg font-bold hover:bg-[#3d617a]"

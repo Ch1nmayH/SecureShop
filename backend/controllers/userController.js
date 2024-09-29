@@ -426,8 +426,9 @@ const getUserAddress = async (req, res) => {
     if (!verified) {
       return res.status(401).json({ message: "You are not authenticated" });
     }
-    const id = verified._id;
-    const address = await Address.findOne({ userId: id });
+    const id = verified.id;
+    const address = await Address.findOne({ user: id });
+    console.log(address)
     // console.log(address);
     let addressToString = `${address.name}, ${address.address1}, ${address.address2}, ${address.city}, ${address.state}, ${address.pinCode}`;
     res.status(200).json({ address: addressToString, fullAddress: address });
@@ -440,6 +441,7 @@ const addAddress = async (req, res) => {
   try {
     // Extract the token from cookies and verify it
     const token = req.cookies.token;
+    console.log(req.body);
     if (!token) {
       return res.status(401).json({ message: "Authentication token missing" });
     }
@@ -450,7 +452,7 @@ const addAddress = async (req, res) => {
     }
 
     const userId = verified.id; // Extract the user ID from the verified token
-
+    
     // Destructure the address fields from request body
     const { name, address1, address2, city, pinCode, state, mobile } =
       req.body.address;
