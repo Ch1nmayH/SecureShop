@@ -3,12 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
 import logo from "../Assets/logo.png";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import UserContext from "../utils/CreateContext";
-import Cookies from "js-cookie";
 import axios from "axios";
 import CartContext from "../utils/CartContext";
 
@@ -56,19 +54,7 @@ const NavBar = () => {
             </Link>
           </div>
 
-          {/* Center: Search Bar */}
-          <div className="hidden md:flex items-center flex-grow justify-center">
-            <input
-              type="text"
-              placeholder="Search"
-              className="border w-full max-w-[400px] md:max-w-[300px] lg:max-w-[350px] px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
-            />
-            <div className="ml-2">
-              <Link to={"/"}>
-                <SearchIcon fontSize="large" className="text-white" />
-              </Link>
-            </div>
-          </div>
+          {/* Removed Search Bar from NavBar */}
 
           {/* Right: Cart and Profile */}
           <div className="flex items-center gap-6 ml-4">
@@ -84,13 +70,13 @@ const NavBar = () => {
               </span>
             </div>
             {!token && (
-               <Link to={"/login"}>
-               <button className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200">
-                 <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                   Login
-                 </span>
-               </button>
-             </Link>
+              <Link to={"/login"}>
+                <button className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200">
+                  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                    Login
+                  </span>
+                </button>
+              </Link>
             )}
             {token && (
               <Link to={"/userDashboard"}>
