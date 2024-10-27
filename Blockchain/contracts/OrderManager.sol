@@ -2,6 +2,8 @@
 pragma solidity ^0.8.0;
 
 contract OrderManager {
+    address public owner;
+
     struct Product {
         string name;
         uint256 price;
@@ -27,6 +29,16 @@ contract OrderManager {
         uint256 timestamp
     );
 
+    // Set the owner as the contract deployer
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can perform this action");
+        _;
+    }
+
     function placeOrder(
         address _receiverAddress,
         Product[] memory _products
@@ -40,6 +52,10 @@ contract OrderManager {
 
         require(msg.value >= totalCost, "Insufficient funds sent");
 
+        // Transfer the funds to the owner
+        (bool sent, ) = owner.call{value: msg.value}("");
+        require(sent, "Failed to send Ether to owner");
+
         // Store the order
         orderCount++;
         Order storage newOrder = orders[orderCount];
@@ -50,7 +66,7 @@ contract OrderManager {
 
         // Copy products to the order
         for (uint256 i = 0; i < _products.length; i++) {
-            newOrder.products.push(_products[i]); // Push each product to the array
+            newOrder.products.push(_products[i]);
         }
 
         emit OrderPlaced(orderCount, msg.sender, _receiverAddress, totalCost, block.timestamp);
@@ -71,5 +87,11 @@ contract OrderManager {
             order.totalAmount,
             order.timestamp
         );
+    }
+
+    // Allow the owner to withdraw any funds sent to the contract (if any)
+    function withdraw() public onlyOwner {
+        (bool sent, ) = owner.call{value: address(this).balance}("");
+        require(sent, "Failed to withdraw Ether");
     }
 }

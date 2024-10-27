@@ -14,6 +14,7 @@ const Cart = () => {
 
   const { token } = useContext(UserContext);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [totalQuantity, setTotalQuantity] = useState(0);
   const [address, setAddress] = useState(""); // Default address
   const [isEditing, setIsEditing] = useState(false); // Toggle for showing/hiding form
   const [fullAddress, setFullAddress] = useState(null);
@@ -93,27 +94,43 @@ const Cart = () => {
 
   useEffect(() => {
     if (cartItems.length > 0) {
-      updateTotalPrice(cartItems);
+     
+      updateTotalPriceAndQuantity(cartItems);
     } else {
       setTotalPrice(0); // Reset total price when cart is empty
+      setTotalQuantity(0);
     }
   }, [cartItems]);
 
-  const updateTotalPrice = (products) => {
-    const total = products.reduce(
-      (acc, product) => acc + product.product.price * (product.quantity || 1),
-      0
-    );
-    setTotalPrice(total);
-  };
 
   const handleQuantityChange = (productId, newQuantity) => {
     if (newQuantity === 0) {
       handleCartEmpty(productId);
     } else {
+      // Update cart item quantity in context
       updateCartItemQuantity(productId, newQuantity);
+      
+      // Update total price and quantity based on updated cartItems
+      const updatedCartItems = cartItems.map((item) =>
+        item.product._id === productId ? { ...item, quantity: newQuantity } : item
+      );
+      updateTotalPriceAndQuantity(updatedCartItems);
     }
   };
+  
+
+  const updateTotalPriceAndQuantity = (products) => {
+    const total = products.reduce(
+      (acc, product) => acc + product.product.price * (product.quantity || 1),
+      0
+    );
+    const quantity = products.reduce(
+      (acc, product) => acc + (product.quantity || 1),
+      0
+    );
+    setTotalPrice(total);
+    setTotalQuantity(quantity);
+ };
 
   const handleCartEmpty = (productId) => {
     removeFromCart(productId);
@@ -337,12 +354,12 @@ const Cart = () => {
               <h2 className="text-xl font-bold mb-4">PRICE DETAILS</h2>
               <div className="flex justify-between mb-2">
                 <span>Price ({cartItems.length} items)</span>
-                <span>{totalPrice.toFixed(2)} ETH</span>
+                <span>{totalPrice.toFixed(10)} ETH</span>
               </div>
               <hr className="my-2" />
               <div className="flex justify-between font-bold text-xl">
                 <span>Total Amount</span>
-                <span>{totalPrice.toFixed(2)} ETH</span>
+                <span>{totalPrice.toFixed(10)} ETH</span>
               </div>
               <button
                 className="bg-[#233745] text-white w-full mt-4 py-3 rounded-lg font-bold hover:bg-[#3d617a]"
