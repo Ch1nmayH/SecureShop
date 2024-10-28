@@ -126,7 +126,7 @@ const AdminPanel = () => {
       isRetailer: false,
     });
     if (activeTab === "retailers") {
-      setNewData({ ...newData, isRetailer: true });
+      setNewData({ ...newData, isRetailer: true, isVerified:true });
     }
   };
 
@@ -201,7 +201,7 @@ const AdminPanel = () => {
     try {
       await axios.put(
         `http://localhost:5000/api/user/changePassword`,
-        { newPassword: newPassword },
+        { password: newPassword },
         { withCredentials: true }
       );
       setPopupMessage("Password changed successfully");

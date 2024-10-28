@@ -34,6 +34,17 @@ const signup = async (req, res, next) => {
       password,
     });
 
+    const newAddress = await Address.create({
+      user: newUser._id, // Ensure the userId is assigned to the `user` field
+      name : `${newUser.firstName} ${newUser.lastName}`,
+      address1 : "Karnatak university",
+      address2 : "",
+      city : "Dharwad",
+      pinCode : "50003", // Ensure correct field is used
+      state : "Karnataka",
+      mobile : `${newUser.mobile}`
+    });
+
     const encryptedEmail = jwt.sign(
       { email: newUser.email },
       process.env.JWT_SECRET,
@@ -396,6 +407,18 @@ const createUser = async (req, res) => {
       isAdmin,
       isRetailer,
     });
+    const newAddress = new Address({
+      user: newUser._id, // Ensure the userId is assigned to the `user` field
+      name : `${newUser.firstName} ${newUser.lastName}`,
+      address1 : "Karnatak university",
+      address2 : "",
+      city : "Dharwad",
+      pinCode : "50003", // Ensure correct field is used
+      state : "Karnataka",
+      mobile : `${newUser.mobile}`
+    });
+
+    await newAddress.save(); // Save the new address to the database
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
     res.status(400).json({ message: error.message });

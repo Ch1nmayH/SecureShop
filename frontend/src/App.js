@@ -100,7 +100,7 @@
         },
 
         {
-          path:"/failed/:orderId",
+          path:"/failed/",
           element:<FailedPage/>
         },
         {
