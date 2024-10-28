@@ -120,7 +120,7 @@ const UserPanel = () => {
 
   // Fetch data when the active tab changes
   useEffect(() => {
-    if (activeTab === "orders") fetchOrders();
+    if (activeTab === "orders") fetchOrders("all");
     if (activeTab === "address") fetchAddress() && fetchFullAddress();
   }, [activeTab]);
 
@@ -135,7 +135,7 @@ const UserPanel = () => {
               <div className="flex gap-4">
                 <button
                   className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 text-lg rounded-lg"
-                  onClick={() => fetchOrders()}
+                  onClick={() => fetchOrders("all")}
                 >
                   All
                 </button>
