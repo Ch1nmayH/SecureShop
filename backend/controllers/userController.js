@@ -220,6 +220,12 @@ const getAllUsers = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
+
+    if (req.query.isAdmin == "true") {
+      const users = await user.find({ isAdmin: true });
+      return res.status(200).json({ users });
+    }
+
     if (req.query.isRetailer == "true") {
       const users = await user.find({ isRetailer: true });
       return res.status(200).json({ users });

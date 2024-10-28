@@ -25,7 +25,7 @@ const Footer = () => {
           {/* Contact Info */}
           <div className="flex flex-col items-center md:items-end border-t md:border-none mt-2">
             <h2 className="text-lg font-semibold mb-2 mt-2">Contact Us</h2>
-            <p className="text-sm mb-1">Email: s3cureh0p@gmail.com</p>
+            <p className="text-sm mb-1">Email: secureshop.crypto@gmail.com</p>
             <p className="text-sm mb-1">Phone: +91 8660438044</p>
             <p className="text-sm">Address: Karnatak University, Dharwad 580003</p>
           </div>

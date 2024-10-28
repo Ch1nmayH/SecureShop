@@ -154,25 +154,41 @@ const AdminPanel = () => {
   };
 
   const handleInputChange = (e) => {
+    
     const { name, value } = e.target;
     setEditData({ ...editData, [name]: value });
   };
 
-  const handleSubmitEdit = (e) => {
+  const handleSubmitEdit = async (e) => {
     e.preventDefault();
-    axios
-      .put(
+    if (!editData || !editData._id) {
+      setPopupMessage("Invalid data for update");
+      setShowPopup(true);
+      return;
+    }
+  
+    try {
+      // Make sure the data is populated
+      console.log("Updating user with data:", editData);
+  
+      await axios.put(
         `http://localhost:5000/api/user/updateuser/${editData._id}`,
         editData,
         { withCredentials: true }
-      )
-      .then(() => {
-        setPopupMessage("User updated successfully");
-        setShowPopup(true);
-        setIsEditing(false);
-        fetchUsers();
-      });
+      );
+  
+      setPopupMessage("User updated successfully");
+      setShowPopup(true);
+      setIsEditing(false);
+      fetchUsers(); // Refresh user list
+      fetchRetailers();
+    } catch (error) {
+      setPopupMessage("Error updating user");
+      setShowPopup(true);
+      console.error("Error in update:", error); // Log any error from the request
+    }
   };
+  
 
   const handlePasswordChangeSubmit = async (e) => {
     e.preventDefault();
@@ -341,11 +357,11 @@ const AdminPanel = () => {
               </div>
             ) : isEditing ? (
               <EditForm
-                formData={editData}
-                handleInputChange={handleInputChange}
-                handleSubmitEdit={handleSubmitEdit}
-                handleCancel={() => setIsEditing(false)}
-              />
+              formData={editData}
+              handleInputChange={handleInputChange}
+              handleSubmit={handleSubmitEdit} // pass handleSubmitEdit directly
+              handleCancel={() => setIsEditing(false)}
+          />
             ) : (
               <div>
                 {activeTab === "users" &&
