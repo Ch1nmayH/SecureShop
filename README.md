@@ -21,7 +21,7 @@ SecureShop leverages blockchain technology to provide a secure and transparent e
 
 ### Cloning the Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/Ch1nmayH/SecureShop.git
 cd secureshop
 ```
 ### Setting Up the Backend
