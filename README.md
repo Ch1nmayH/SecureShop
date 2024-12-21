@@ -70,11 +70,11 @@ cd ../blockchain
 npm install
 ```
 3. Compile the smart contracts:
-```javascript
+```bash
 truffle compile
 ```
 4. Migrate the smart contracts to the Sepolia test network:
-```
+```bash
 truffle migrate --network sepolia
 ```
 5. Ensure you have added the Sepolia network to your truffle-config.js file:
@@ -97,7 +97,7 @@ module.exports = {
 
 ### Final Steps
 1. Ensure the backend and frontend are running.
-2. Open the frontend in your browser (usually at ``````bash http://localhost:3000```).
+2. Open the frontend in your browser (usually at ```bash http://localhost:3000```).
 3. Connect MetaMask to the application.
 4. Test the platform by browsing products, adding them to the cart, and completing transactions.
 
@@ -107,7 +107,7 @@ module.exports = {
 3. ```blockchain```: Contains the Solidity smart contracts and Truffle configurations.
 
 ### Additional Notes
-- Replace ``````bash <your-mongodb-connection-string>```, ``````bash <your-jwt-secret>```, ``````bash <your-mnemonic>```, and ``````bash <your-infura-project-id>``` with your respective configurations.
+- Replace ```bash <your-mongodb-connection-string>```, ```bash <your-jwt-secret>```, ```bash <your-mnemonic>```, and ```bash <your-infura-project-id>``` with your respective configurations.
 - Use the <a href="https://faucets.chain.link/sepolia">Sepolia Faucet</a> to get Sepolia ETH for testing.
   
 ### Support
