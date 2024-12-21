@@ -26,51 +26,51 @@ cd secureshop
 ```
 ### Setting Up the Backend
 1. Navigate to the ```backend``` folder:
-```
+```bash
 cd backend
 ```
 2. Install dependencies:
 
-```
+```bash
 npm install
 ```
 3. Set up environment variables by creating a .env file:
-```
+```bash
 PORT=5000
 MONGO_URI=<your-mongodb-connection-string>
 JWT_SECRET=<your-jwt-secret>
 ```
 4. Start the server:
-```
+```bash
 npm start
 ```
 
 ### Setting Up the Frontend
 1. Navigate to the ```frontend``` folder:
-```
+```bash
 cd ../frontend
 ```
 2. Install dependencies:
-```
+```bash
 npm install
 ```
 
 3. Start the React app:
-```
+```bash
 npm start
 ```
 
 ### Setting Up the Blockchain
 1. Navigate to the ```blockchain``` folder:
-```
+```bash
 cd ../blockchain
 ```
 2. Install dependencies:
-```
+```bash
 npm install
 ```
 3. Compile the smart contracts:
-```
+```javascript
 truffle compile
 ```
 4. Migrate the smart contracts to the Sepolia test network:
@@ -78,8 +78,7 @@ truffle compile
 truffle migrate --network sepolia
 ```
 5. Ensure you have added the Sepolia network to your truffle-config.js file:
-```
-
+```javascript
 module.exports = {
   networks: {
     sepolia: {
@@ -98,7 +97,7 @@ module.exports = {
 
 ### Final Steps
 1. Ensure the backend and frontend are running.
-2. Open the frontend in your browser (usually at ```http://localhost:3000```).
+2. Open the frontend in your browser (usually at ``````bash http://localhost:3000```).
 3. Connect MetaMask to the application.
 4. Test the platform by browsing products, adding them to the cart, and completing transactions.
 
@@ -108,7 +107,7 @@ module.exports = {
 3. ```blockchain```: Contains the Solidity smart contracts and Truffle configurations.
 
 ### Additional Notes
-- Replace ```<your-mongodb-connection-string>```, ```<your-jwt-secret>```, ```<your-mnemonic>```, and ```<your-infura-project-id>``` with your respective configurations.
+- Replace ``````bash <your-mongodb-connection-string>```, ``````bash <your-jwt-secret>```, ``````bash <your-mnemonic>```, and ``````bash <your-infura-project-id>``` with your respective configurations.
 - Use the <a href="https://faucets.chain.link/sepolia">Sepolia Faucet</a> to get Sepolia ETH for testing.
   
 ### Support
