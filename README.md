@@ -35,8 +35,7 @@ cd backend
 npm install
 ```
 3. Set up environment variables by creating a .env file:
-makefile
-Copy code
+```
 PORT=5000
 MONGO_URI=<your-mongodb-connection-string>
 JWT_SECRET=<your-jwt-secret>
@@ -95,7 +94,7 @@ module.exports = {
   }
 };
 ```
-5. Configure MetaMask to connect to the Sepolia test network and ensure you have some Sepolia ETH for testing.
+6. Configure MetaMask to connect to the Sepolia test network and ensure you have some Sepolia ETH for testing.
 
 ### Final Steps
 1. Ensure the backend and frontend are running.
@@ -111,6 +110,7 @@ module.exports = {
 ### Additional Notes
 - Replace ```<your-mongodb-connection-string>```, ```<your-jwt-secret>```, ```<your-mnemonic>```, and ```<your-infura-project-id>``` with your respective configurations.
 - Use the <a href="https://faucets.chain.link/sepolia">Sepolia Faucet</a> to get Sepolia ETH for testing.
+  
 ### Support
 For issues or questions, please raise an issue in the repository or contact the development team.
 
