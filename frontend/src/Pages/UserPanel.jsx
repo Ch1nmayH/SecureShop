@@ -151,12 +151,12 @@ const UserPanel = () => {
                 >
                   Failed
                 </button>
-                <button
+                {/* <button
                   className="bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-6 text-lg rounded-lg"
                   onClick={() => fetchOrders("pending")}
                 >
                   Pending
-                </button>
+                </button> */}
               </div>
             </div>
             <h1 className="text-3xl font-semibold mb-6">Your Orders</h1>
