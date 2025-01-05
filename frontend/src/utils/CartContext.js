@@ -10,6 +10,9 @@ export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0); // Cart count
   const { token, setToken } = useContext(UserContext);
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
+
   // Fetch cart items from the API
   const fetchCartItems = async () => {
     if (token) {

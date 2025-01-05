@@ -13,6 +13,9 @@ const ProductCard = ({ product }) => {
     navigate(`/product/${product._id}`);
   };
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
+
   const handleCartToggle = () => {
     if(!token){
       navigate("/login");
@@ -37,7 +40,7 @@ const ProductCard = ({ product }) => {
       <div className="relative">
         <motion.img
           className="w-full h-48 object-contain transition-opacity duration-300 ease-in-out p-2"
-          src={"http://localhost:5000/" + product.image || 'default-image.jpg'}
+          src={`${API_URL}/` + product.image || 'default-image.jpg'}
           onClick={handleCardClick}
           alt={product.name}
           whileHover={{ opacity: 0.9 }}

@@ -15,11 +15,14 @@ const Product = () => {
   const { token } = useContext(UserContext);
   const navigate = useNavigate();
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/product/getproduct/${productId}`
+          `${API_URL}/api/product/getproduct/${productId}`
         );
         setProduct(response.data);
       } catch (error) {
@@ -64,7 +67,7 @@ const Product = () => {
         {/* Product Image */}
         <div className="w-full lg:w-5/12 max-w-md">
           <motion.img
-            src={`http://localhost:5000/${product.image}`}
+            src={`${API_URL}/${product.image}`}
             alt={product.title}
             className="w-full h-72 object-contain rounded-lg shadow-lg"
             initial={{ opacity: 0 }}

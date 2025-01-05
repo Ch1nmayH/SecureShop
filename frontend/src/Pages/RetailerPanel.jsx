@@ -40,12 +40,15 @@ const RetailerPanel = () => {
   const { token } = useContext(UserContext);
   const navigate = useNavigate();
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
+
   useEffect(() => {
     if (!Cookies.get("token")) {
       navigate("/login");
     }
     const response = axios.get(
-      "http://localhost:5000/api/user/checkRetailerAuth",
+      `${API_URL}/api/user/checkRetailerAuth`,
       {
         withCredentials: true,
       }
@@ -69,7 +72,7 @@ const RetailerPanel = () => {
     setPasswordErrorMessage("");
     try {
       await axios.put(
-        "http://localhost:5000/api/user/changePassword",
+        `${API_URL}/api/user/changePassword`,
         { password },
         { withCredentials: true }
       );
@@ -84,7 +87,7 @@ const RetailerPanel = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/product/getProducts",
+        `${API_URL}/api/product/getProducts`,
         { withCredentials: true }
       );
       setProducts(response.data);
@@ -96,7 +99,7 @@ const RetailerPanel = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/product/getCategories",
+        `${API_URL}/api/product/getCategories`,
         { withCredentials: true }
       );
       setCategories(response.data);
@@ -167,8 +170,8 @@ const RetailerPanel = () => {
     try {
       const apiUrl =
         activeTab === "products"
-          ? "http://localhost:5000/api/product/addProduct"
-          : "http://localhost:5000/api/product/addCategory";
+          ? `${API_URL}/api/product/addProduct`
+          : `${API_URL}/api/product/addCategory`;
 
       // Determine the request options depending on whether it's a product (multipart) or category (JSON)
       const requestOptions =
@@ -222,8 +225,8 @@ const RetailerPanel = () => {
 
       const apiUrl =
         activeTab === "products"
-          ? `http://localhost:5000/api/product/updateproduct/${editData._id}`
-          : `http://localhost:5000/api/product/updatecategory/${editData._id}`;
+          ? `${API_URL}/api/product/updateproduct/${editData._id}`
+          : `${API_URL}/api/product/updatecategory/${editData._id}`;
 
       // For product updates, ensure that the headers are set for multipart/form-data
       const requestOptions =
@@ -265,8 +268,8 @@ const RetailerPanel = () => {
     try {
       const apiUrl =
         activeTab === "products"
-          ? `http://localhost:5000/api/product/deleteProduct/${id}`
-          : `http://localhost:5000/api/product/deletecategory/${id}`;
+          ? `${API_URL}/api/product/deleteProduct/${id}`
+          : `${API_URL}/api/product/deletecategory/${id}`;
 
       await axios.delete(apiUrl, { withCredentials: true });
 

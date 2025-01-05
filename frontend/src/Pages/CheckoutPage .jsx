@@ -16,13 +16,15 @@ const CheckoutPage = () => {
   const [orderId, setOrderId] = useState(null); // Generate unique order ID
   const navigate = useNavigate();
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
 
   useEffect(() => {
     if (!Cookies.get("token")) {
       navigate("/login");
     }
     const response = axios.get(
-      "http://localhost:5000/api/user/checkAuth",
+      `${API_URL}/api/user/checkAuth`,
       {
         withCredentials: true,
       }
@@ -144,7 +146,7 @@ const CheckoutPage = () => {
 
       // Post to backend
       const response = await axios.post(
-        "http://localhost:5000/api/transaction/transactions",
+       `${API_URL}/api/transaction/transactions`,
         transactionData,
         {
           withCredentials: true,
@@ -180,7 +182,7 @@ const CheckoutPage = () => {
       // Post to backend
       try {
         await axios.post(
-          "http://localhost:5000/api/transaction/transactions",
+          `${API_URL}/api/transaction/transactions`,
           transactionData,
           {
             withCredentials: true,

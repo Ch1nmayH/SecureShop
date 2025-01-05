@@ -14,6 +14,8 @@ const ForgotPassword = () => {
   const navigate = useNavigate()
   const { token } = useContext(UserContext)
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
 
   useEffect(() => {
     if (token) navigate('/')  
@@ -32,7 +34,7 @@ const ForgotPassword = () => {
     setEmailError(emailValidation)
     if (emailValidation) return
     try {
-      const response = await axios.post('http://localhost:5000/api/user/forgotpassword', { email })
+      const response = await axios.post(`${API_URL}/api/user/forgotpassword`, { email })
       if (response.status === 200) {
         navigate(`/ForgotPasswordverification/${response.data.token}`)
       }

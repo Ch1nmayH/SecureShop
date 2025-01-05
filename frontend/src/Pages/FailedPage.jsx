@@ -7,12 +7,14 @@ import axios from "axios";
 const FailedPage = () => {
   const navigate = useNavigate();
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
   useEffect(() => {
     if (!Cookies.get("token")) {
       navigate("/login");
     }
     const response = axios.get(
-      "http://localhost:5000/api/user/checkAuth",
+      `${API_URL}/api/user/checkAuth`,
       {
         withCredentials: true,
       }

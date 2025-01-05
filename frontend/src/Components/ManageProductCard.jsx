@@ -1,14 +1,12 @@
 import React from "react";
-const apiUrl = process.env.REACT_APP_API_BASE_URL;
-
 
 const ManageProductCard = ({ product, onEdit, onDelete, onManageStock }) => {
+  const API_URL = process.env.REACT_APP_API_BASE_URL;
+
   return (
     <div className="bg-white shadow-md rounded p-4">
-      {console.log(apiUrl)}
-     
       <img
-        src={"http://localhost:5000/" + product.image}
+        src={`${API_URL}/` + product.image}
         alt={product.name}
         className="h-[400px] w-full object-contain rounded"
       />

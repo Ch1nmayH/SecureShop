@@ -9,11 +9,12 @@ const CartItem = ({ product, onQuantityChange, oldQuantity, removeFromCart }) =>
   const [quantity, setQuantity] = useState(oldQuantity); 
   const [loading, setLoading] = useState(false); 
   const { updateCartItemQuantity } = React.useContext(CartContext);
+  const API_URL = process.env.REACT_APP_API_BASE_URL
 
   useEffect(() => {
     const fetchProductQuantity = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/cart/getProductQuantity", { productId: product._id }, { withCredentials: true });
+        const response = await axios.get(`${API_URL}/api/cart/getProductQuantity`, { productId: product._id }, { withCredentials: true });
         if (response.status === 200) {
           setQuantity(response.data.quantity);
         } else {
@@ -76,7 +77,7 @@ const CartItem = ({ product, onQuantityChange, oldQuantity, removeFromCart }) =>
       transition={{ duration: 0.5 }}
     >
       <img
-        src={`http://localhost:5000/${product.image}`}
+        src={`${API_URL}/${product.image}`}
         alt={shortTitle}
         className="w-16 h-16 object-cover rounded-md"
       />

@@ -12,12 +12,15 @@ const SuccessPage = () => {
   const [orderedItems, setOrderedItems] = useState([]);
   const [transactionHash, setTransactionHash] = useState(null);
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
+
   useEffect(() => {
     if (!Cookies.get("token")) {
       navigate("/login");
     }
     const response = axios.get(
-      "http://localhost:5000/api/user/checkAuth",
+      `${API_URL}/api/user/checkAuth`,
       {
         withCredentials: true,
       }
@@ -35,7 +38,7 @@ const SuccessPage = () => {
     const fetchTransaction = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/transaction/getParticularTransaction/${orderId}`,
+          `${API_URL}/api/transaction/getParticularTransaction/${orderId}`,
           { withCredentials: true }
         );
         setOrderedItems(response.data.transactions[0]);

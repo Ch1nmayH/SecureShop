@@ -17,6 +17,7 @@ const ForgotPasswordVerification = () => {
   const userToken = useParams().token;
   const {token} = useContext(UserContext);
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
 
 
   useEffect(() => {
@@ -50,7 +51,7 @@ const ForgotPasswordVerification = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/user/forgotPasswordVerify",
+        `${API_URL}/api/user/forgotPasswordVerify`,
         { token:userToken, otp: otpCode }
       );
 

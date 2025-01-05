@@ -9,9 +9,10 @@ import UserContext from "../utils/CreateContext";
 import Cookies from "js-cookie";
 
 const Cart = () => {
-  const { cartItems, updateCartItemQuantity, removeFromCart, clearCart } =
-    useContext(CartContext);
+  const { cartItems, updateCartItemQuantity, removeFromCart, clearCart } = useContext(CartContext);
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+  
   const { token } = useContext(UserContext);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalQuantity, setTotalQuantity] = useState(0);
@@ -34,7 +35,7 @@ const Cart = () => {
       navigate("/login");
     }
     const response = axios.get(
-      "http://localhost:5000/api/user/checkAuth",
+      `${API_URL}/api/user/checkAuth`,
       {
         withCredentials: true,
       }
@@ -52,7 +53,7 @@ const Cart = () => {
     // Fetch address from API
     const fetchAddress = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/user/getUserAddress", { withCredentials: true }); // Replace with actual API URL
+        const response = await axios.get(`${API_URL}/api/user/getUserAddress`, { withCredentials: true }); // Replace with actual API URL
         console.log("Address response:", response.data);
         setAddress(response.data.address || "Karnatak University, Dharwad 580003"); // Fallback if empty address
       } catch (error) {
@@ -64,7 +65,7 @@ const Cart = () => {
     const fetchFullAddress = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/user/getUserAddress",
+          `${API_URL}/api/user/getUserAddress`,
           { withCredentials: true }
         );
         setFullAddress(response.data.fullAddress);
@@ -166,7 +167,7 @@ const Cart = () => {
 
       // Send to backend
       await axios.post(
-        "http://localhost:5000/api/user/addAddress",
+        `${API_URL}/api/user/addAddress`,
         {
           address: {
             name: formValues.name,

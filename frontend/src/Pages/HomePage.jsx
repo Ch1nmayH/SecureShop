@@ -11,10 +11,12 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true); // Add loading state
   const [error, setError] = useState(null); // Add error state
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/product/getproducts");
+        const response = await axios.get(`${API_URL}/api/product/getproducts`);
         if (Array.isArray(response.data)) {
           setProducts(response.data);
         } else {

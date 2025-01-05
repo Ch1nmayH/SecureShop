@@ -22,6 +22,9 @@ const UserPanel = () => {
     pinCode: "",
     mobile: "",
   });
+
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
   const [confirmPassword, setConfirmPassword] = useState("");
   const [password, setPassword] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
@@ -40,7 +43,7 @@ const UserPanel = () => {
   const fetchOrders = async (status = "success") => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/transaction/transactions/${status}`,
+        `${API_URL}/api/transaction/transactions/${status}`,
         {
           withCredentials: true,
         }
@@ -56,7 +59,7 @@ const UserPanel = () => {
   const fetchAddress = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/user/getUserAddress",
+        `${API_URL}/api/user/getUserAddress`,
         { withCredentials: true }
       );
       setAddress(response.data.address);
@@ -69,7 +72,7 @@ const UserPanel = () => {
   const fetchFullAddress = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/user/getUserAddress",
+        `${API_URL}/api/user/getUserAddress`,
         { withCredentials: true }
       );
       setFullAddress(response.data.fullAddress);
@@ -87,7 +90,7 @@ const UserPanel = () => {
     setPasswordErrorMessage("");
     try {
       await axios.put(
-        "http://localhost:5000/api/user/changePassword",
+        `${API_URL}/api/user/changePassword`,
         { password },
         { withCredentials: true }
       );
@@ -104,7 +107,7 @@ const UserPanel = () => {
     e.preventDefault();
     try {
       await axios.post(
-        "http://localhost:5000/api/user/addAddress",
+        `${API_URL}/api/user/addAddress`,
         { address: editAddress },
         { withCredentials: true }
       );

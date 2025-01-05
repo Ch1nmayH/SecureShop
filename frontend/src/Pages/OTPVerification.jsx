@@ -14,6 +14,9 @@ const OTPVerification = () => {
 
   const token = useParams().token;
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
+
   useEffect(() => {
     if (countdown > 0) {
       const timer = setInterval(() => setCountdown(countdown - 1), 1000);
@@ -40,7 +43,7 @@ const OTPVerification = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/user/verify",
+        `${API_URL}/api/user/verify`,
         { token, otp: otpCode }
       );
 

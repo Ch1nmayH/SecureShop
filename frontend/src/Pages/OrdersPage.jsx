@@ -9,12 +9,15 @@ const OrdersPage = () => {
   const navigate = useNavigate();
   const orderStatusParam = useParams().orderStatus;
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
+
   useEffect(() => {
     if (!Cookies.get("token")) {
       navigate("/login");
     }
     const response = axios.get(
-      "http://localhost:5000/api/user/checkAuth",
+      `${API_URL}/api/user/checkAuth`,
       {
         withCredentials: true,
       }
@@ -30,7 +33,7 @@ const OrdersPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/transaction/transactions/${orderStatusParam}`, {withCredentials:true});  // Replace with user-specific endpoint
+        const response = await axios.get(`${API_URL}/api/transaction/transactions/${orderStatusParam}`, {withCredentials:true});  // Replace with user-specific endpoint
         setOrders(response.data.transactions);
         console.log(response.data.transactions);
       } catch (error) {

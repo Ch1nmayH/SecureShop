@@ -10,10 +10,13 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/product/getproducts");
+        const response = await axios.get(`${API_URL}/api/product/getproducts`);
         if (Array.isArray(response.data)) {
           setProducts(response.data);
         } else {
@@ -28,7 +31,7 @@ const Products = () => {
 
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/product/getcategories");
+        const response = await axios.get(`${API_URL}/api/product/getcategories`);
         setCategories(response.data);
       } catch (error) {
         console.error("There was an error fetching the categories!", error);

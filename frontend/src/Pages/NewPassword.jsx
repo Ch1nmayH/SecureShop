@@ -16,6 +16,9 @@ const NewPassword = () => {
   const verifyToken = useParams().token;
   const secret = useParams().secret;
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
+
   console.log(verifyToken, secret);
   useEffect(() => {
     if (token) navigate("/");
@@ -46,7 +49,7 @@ const NewPassword = () => {
     if (passwordValidation || confirmPasswordValidation) return;
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/user/newPassword",
+        `${API_URL}/api/user/newPassword`,
         { password, token:verifyToken, secret }
       );
       if (response.status === 200 && response.data.message === "Password changed successfully") {

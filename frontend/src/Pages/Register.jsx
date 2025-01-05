@@ -22,6 +22,9 @@ const Register = () => {
 
   const navigate = useNavigate();
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
+
   // Validation functions
   const validateFirstName = () => {
     if (!firstName) return "First name is required";
@@ -94,7 +97,7 @@ const Register = () => {
     try {
       // Backend request using Axios
       const response = await axios.post(
-        "http://localhost:5000/api/user/signup",
+        `${API_URL}/api/user/signup`,
         {
           firstName,
           lastName,

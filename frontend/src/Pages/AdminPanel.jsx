@@ -28,6 +28,8 @@ const AdminPanel = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
   const { token, setToken } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -36,7 +38,7 @@ const AdminPanel = () => {
       navigate("/login");
     }
     const response = axios.get(
-      "http://localhost:5000/api/user/checkAdminAuth",
+      `${API_URL}/api/user/checkAdminAuth`,
       {
         withCredentials: true,
       }
@@ -51,7 +53,7 @@ const AdminPanel = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/user/getUsers?isRetailer=false?isAdmin=false",
+        `${API_URL}/api/user/getUsers?isRetailer=false?isAdmin=false`,
         { withCredentials: true }
       );
       setUsers(response.data.users);
@@ -61,7 +63,7 @@ const AdminPanel = () => {
   const fetchRetailers = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/user/getUsers?isRetailer=true",
+        `${API_URL}/api/user/getUsers?isRetailer=true`,
         { withCredentials: true }
       );
       setRetailers(response.data.users);
@@ -94,7 +96,7 @@ const AdminPanel = () => {
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       axios
-        .delete(`http://localhost:5000/api/user/deleteUser/${id}/`, {
+        .delete(`${API_URL}/api/user/deleteUser/${id}/`, {
           withCredentials: true,
         })
         .then(() => {
@@ -138,7 +140,7 @@ const AdminPanel = () => {
   const handleSubmitAdd = (e) => {
     e.preventDefault();
     axios
-      .post(`http://localhost:5000/api/user/createuser`, newData, {
+      .post(`${API_URL}/api/user/createuser`, newData, {
         withCredentials: true,
       })
       .then(() => {
@@ -172,7 +174,7 @@ const AdminPanel = () => {
       console.log("Updating user with data:", editData);
   
       await axios.put(
-        `http://localhost:5000/api/user/updateuser/${editData._id}`,
+        `${API_URL}/api/user/updateuser/${editData._id}`,
         editData,
         { withCredentials: true }
       );
@@ -200,7 +202,7 @@ const AdminPanel = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/user/changePassword`,
+        `${API_URL}/api/user/changePassword`,
         { password: newPassword },
         { withCredentials: true }
       );
