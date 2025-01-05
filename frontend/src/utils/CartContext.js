@@ -18,7 +18,7 @@ export const CartProvider = ({ children }) => {
     if (token) {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/cart/getCartItems",
+          `${API_URL}/api/cart/getCartItems`,
           {
             withCredentials: true,
           }
@@ -40,7 +40,7 @@ export const CartProvider = ({ children }) => {
   const addToCart = async (productId, quantity = 1) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/cart/addtocart",
+        `${API_URL}/api/cart/addtocart`,
         { productId, quantity },
         { withCredentials: true }
       );
@@ -57,7 +57,7 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = async (productId) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/cart/removeFromCart",
+        `${API_URL}/api/cart/removeFromCart`,
         { productId },
         { withCredentials: true }
       );
@@ -73,7 +73,7 @@ export const CartProvider = ({ children }) => {
   const clearCart = async () => {
     try {
       await axios.post(
-        "http://localhost:5000/api/cart/clearCart",
+        `${API_URL}/api/cart/clearCart`,
         {},
         { withCredentials: true }
       );
@@ -88,7 +88,7 @@ export const CartProvider = ({ children }) => {
   const updateCartItemQuantity = async (productId, quantity) => {
     try {
       await axios.post(
-        "http://localhost:5000/api/cart/updateQuantity",
+        `${API_URL}/api/cart/updateQuantity`,
         { productId, quantity },
         { withCredentials: true }
       );
@@ -101,7 +101,7 @@ export const CartProvider = ({ children }) => {
   const fetchProductQuantity = async (productId) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/cart/getProductQuantity",
+        `${API_URL}/api/cart/getProductQuantity`,
         { productId },
         { withCredentials: true }
       );
