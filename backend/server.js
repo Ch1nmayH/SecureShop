@@ -21,7 +21,7 @@ const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(cors({
-	origin: "http://localhost:3000", // Replace * with the specific origin
+	origin: process.env.ORIGIN, // Replace * with the specific origin
 	credentials: true, // Allow sending of credentials (cookies)
   }));
 
